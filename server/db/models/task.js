@@ -26,6 +26,14 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "cascade",
         hooks: true,
       });
+
+      // Task model
+Task.hasMany(models.File, {
+  foreignKey: "task_id", // Use 'task_id' as the foreign key to match the File model
+  onDelete: "cascade",
+  hooks: true,
+});
+
     }
   }
   Task.init(

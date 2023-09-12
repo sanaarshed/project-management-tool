@@ -2,7 +2,7 @@ const express = require("express");
 const { asyncHandler } = require("./utilities/utils");
 const { requireAuth } = require("./utilities/auth");
 const { check, validationResult } = require("express-validator");
-const { Task, Comment, Project, User } = require("../models");
+const { Task, Comment, Project, User, File } = require("../models");
 const comment = require("../../db/models/comment");
 
 const router = express.Router();
@@ -13,7 +13,7 @@ const router = express.Router();
 router.get(
   "/",
   asyncHandler(async (req, res, next) => {
-    const tasks = await Task.findAll({});
+    const tasks = await Task.findAll({include: [{ model: File }],});
 
     res.json(tasks);
   })
