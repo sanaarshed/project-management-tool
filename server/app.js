@@ -10,6 +10,7 @@ const teamRouter = require("./db/routes/teams");
 const tasklistRouter = require("./db/routes/tasklists");
 const commentRouter = require("./db/routes/comments");
 const userteamRouter = require("./db/routes/userteams");
+const fileRouter = require("./db/routes/file");
 const app = express();
 
 app.use(bodyParser.json());
@@ -28,6 +29,9 @@ app.use("/team", teamRouter);
 app.use("/tasklist", tasklistRouter);
 app.use("/comment", commentRouter);
 app.use("/userteam", userteamRouter);
+app.use("/file", fileRouter);
+
+
 
 app.get("/", (req, res) => {
   res.send("<h1>You're Connected </h1>");
