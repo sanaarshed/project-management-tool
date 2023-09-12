@@ -13,7 +13,7 @@ const router = express.Router();
 router.get(
   "/",
   asyncHandler(async (req, res, next) => {
-    const tasks = await Task.findAll({include: [{ model: File }],});
+    const tasks = await Task.findAll({include: [{ model: File }]});
 
     res.json(tasks);
   })
@@ -89,7 +89,6 @@ router.put(
           },
         }
       );
-      console.log("confirm");
       res.json(updateTask);
     } catch (err) {
       res.status(401).send({ error: "Something went wrong" });
@@ -121,6 +120,7 @@ router.get(
             attributes: ["id", "name", "email", "image"],
           },
         },
+        { model: File }
       ],
     });
     res.json(task);
