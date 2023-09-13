@@ -291,6 +291,8 @@ const PopOutTaskDetailsHome = ({ showSideTaskDetails, sideTaskDetails }) => {
                         className="assignee-select-container"
                         style={{ display: "flex" }}
                       >
+                    
+                       
                         <div
                           className="user-avatar"
                           style={{

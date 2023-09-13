@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { RiCloseLine } from "react-icons/ri";
 import { Context as TaskContext } from "../../context/store/TaskStore";
@@ -9,6 +9,8 @@ import apiServer from "../../config/apiServer";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { BiCheck } from "react-icons/bi";
+import AttachFileIcon from "../../assets/Attach";
+import CrossIcon from "../../assets/Cross";
 
 const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
   const [taskState, taskdispatch] = useContext(TaskContext);
@@ -19,8 +21,13 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
   const [assigneeUser, setAssigneeUser] = useState(task.User);
   const [taskComments, setTaskComments] = useState(task.Comments);
   const [dueDate, setDueDate] = useState(new Date(task.due_date));
+  const [files, setFiles] = useState([]);
   // const [completed, setCompleted] = useState(task.completed);
   const [commentBox, setCommentBox] = useState(false);
+  const [file, setFile] = useState();
+  const inputRef = useRef(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [bufferimagesPreview, setBufferImagePreview] = useState([]);
 
   var completed = task.completed;
   const date = moment(
@@ -28,6 +35,7 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
     "YYYYMMDD"
   );
 
+  // console.log(file);
   console.log(task);
   // console.log(task.due_date, "task.due_date DB");
   // console.log(date, "moment date convert from db");
@@ -103,6 +111,92 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
     await updateComplete();
   };
 
+  const handleFileUpload = (e) => {
+    console.log("file upload--->");
+    // await uploadFile();
+  };
+  const onFileChoose = () => {
+    //avoid multi select
+    const inputFile = inputRef.current?.files[0];
+    if (inputFile) {
+      setFile(inputFile);
+
+      // Create a FileReader to read the selected image as a data URL
+      const reader = new FileReader();
+      if (inputFile.type.match("image/*")) {
+        reader.onloadend = () => {
+          // Update state with the selected image and its thumbnail
+          setImagePreview(reader.result);
+        };
+
+        reader.readAsDataURL(inputFile);
+      }
+    } else {
+      // Reset the image if no file is selected
+      setImagePreview(null);
+    }
+  };
+
+  useEffect(() => {
+    console.log("files in task useeffect--->");
+    if (task.Files) setFiles(task.Files);
+    else setFiles([]);
+  }, [task]);
+
+  useEffect(() => {
+    console.log("files useeffect--->");
+    (async () => {
+      const bufferImages = await Promise.all(
+        files?.map(async (item) => {
+          const buffer = await getBufferImage(item);
+          console.log("buffer--->", buffer);
+          return buffer;
+        })
+      );
+      setBufferImagePreview(bufferImages);
+    })();
+  }, [files]);
+
+  const getBufferImage = async (item) => {
+    const fileExtension = item?.name?.split(".").pop();
+    console.log("fileExtension--->", fileExtension);
+    console.log("item.id--->", item.id);
+    if (fileExtension === "jpeg" || fileExtension === "jpg") {
+      const bufferFile = await apiServer.get(`/file/${item.id}`);
+      return bufferFile;
+    }
+  };
+
+  // const onImageBuffer = () => {
+  //   // Create a FileReader to read the selected image as a data URL
+  //   const reader = new FileReader();
+  //   if (inputFile.type.match("image/*")) {
+  //     reader.readAsDataURL(inputFile);
+  //     reader.onloadend = () => {
+  //       // Update state with the selected image and its thumbnail
+  //       setImagePreview(reader.result);
+  //     };
+  //   }
+  // };
+  const handleAttachClick = async () => {
+    inputRef.current?.click();
+  };
+
+  const uploadFile = async () => {
+    console.log("file--->", file);
+    // if (!file) {
+    //   return;
+    // }
+
+    // Uploading the file to the server
+    if (file) {
+      console.log("file yes--->");
+      // await apiServer.post(`/file/upload`, {
+      //   file: file,
+      //   taskId: task.id,
+      // });
+    }
+  };
   const updateComplete = async () => {
     // console.log(completed, "before");
     completed = !completed;
@@ -277,17 +371,21 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
                     <h2>{task.name}</h2>
                   </div>
                   <div className="task-details-container">
-                    <div className="task-details-subtitles">
-                      <p>Assignee</p>
-                      <p>Due Date</p>
-                      <p>Project</p>
-                      <p>Description</p>
-                    </div>
+                    {/* <div className="task-details-subtitles"> */}
+                    {/* <p>Assignee</p> */}
+                    {/* <p>Due Date</p> */}
+                    {/* <p>Project</p>
+                      <p>Attach File</p> */}
+                    {/* <p style={{ ...(file && { marginTop: "100px" }) }}>
+                        Description
+                      </p> */}
+                    {/* </div> */}
                     <div className="task-details-data">
                       <div
                         className="assignee-select-container"
                         style={{ display: "flex" }}
                       >
+                        <p>Assignee</p>
                         <div
                           className="user-avatar"
                           style={{
@@ -318,67 +416,140 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
                           {renderedUsers}
                         </select>
                       </div>
-                      <div
-                        className="dueDate-container"
-                        style={{ marginTop: "20px" }}
-                      >
-                        <DatePicker
-                          selected={dueDate}
-                          onChange={(date) => updateDueDate(date)}
-                          // customInput={<DateButton />}
-                        />
-                        {/* <p style={{ marginTop: "20px" }}> {date.format("MMM D")}</p> */}
+                      {/* due date */}
+                      <div style={{ display: "flex" }}>
+                        <p>Due Date</p>
+                        <div
+                          className="dueDate-container"
+                          style={{ marginTop: "20px" }}
+                        >
+                          <DatePicker
+                            selected={dueDate}
+                            onChange={(date) => updateDueDate(date)}
+                            // customInput={<DateButton />}
+                          />
+                          {/* <p style={{ marginTop: "20px" }}> {date.format("MMM D")}</p> */}
+                        </div>
                       </div>
-
-                      <div
-                        className="project-select-container"
-                        style={{
-                          height: "25px",
-                          borderRadius: "20px",
-
-                          alignItems: "center",
-                          justifyContent: "center",
-                          marginTop: "15px",
-                        }}
-                      >
-                        <select
-                          id="project-select"
-                          name="projectId"
-                          className={`form-input `}
-                          onChange={getProjectUsers}
-                          defaultValue={task.Project.name}
-                          ref={register({ required: true })}
-                          onBlur={updateProject}
+                      <div style={{ display: "flex" }}>
+                        <p>Project</p>
+                        <div
+                          className="project-select-container"
                           style={{
                             height: "25px",
                             borderRadius: "20px",
-                            display: "flex",
+
                             alignItems: "center",
-                            background: "transparent",
                             justifyContent: "center",
+                            marginTop: "15px",
                           }}
                         >
-                          <option
-                            value={task.Project.id}
-                            id={task.Project.id}
-                            selected
+                          <select
+                            id="project-select"
+                            name="projectId"
+                            className={`form-input `}
+                            onChange={getProjectUsers}
+                            defaultValue={task.Project.name}
+                            ref={register({ required: true })}
+                            onBlur={updateProject}
+                            style={{
+                              height: "25px",
+                              borderRadius: "20px",
+                              display: "flex",
+                              alignItems: "center",
+                              background: "transparent",
+                              justifyContent: "center",
+                            }}
                           >
-                            {task.Project.name}
-                          </option>
-                          {renderedProjects}
-                        </select>
-                        {/* <p style={{ margin: 0 }}> {task.Project.name}</p> */}
+                            <option
+                              value={task.Project.id}
+                              id={task.Project.id}
+                              selected
+                            >
+                              {task.Project.name}
+                            </option>
+                            {renderedProjects}
+                          </select>
+                          {/* <p style={{ margin: 0 }}> {task.Project.name}</p> */}
+                        </div>
                       </div>
+                      <div style={{ display: "flex" }}>
+                        <p>Attach File</p>
+                        <div style={{ marginTop: "10px" }}>
+                          <input
+                            ref={inputRef}
+                            onChange={onFileChoose}
+                            type="file"
+                            id="getFile"
+                            style={{ display: "none" }}
+                          />
 
+                          <div
+                            style={{
+                              backgroundColor: "red",
+                            }}
+                          >
+                            {bufferimagesPreview.map((ele) => (
+                              <img
+                                // className="image-preview"
+                                src={`data:image/jpeg;base64,${ele.data}`}
+                                // src={ele.data}
+                                style={{ width: "80px", height: "80px" }}
+                              />
+                            ))}
+                          </div>
+                          {file ? (
+                            <div style={{ position: "relative" }}>
+                              {imagePreview ? (
+                                <div>
+                                  <img
+                                    className="image-preview"
+                                    src={imagePreview}
+                                    style={{ width: "80px", height: "80px" }}
+                                  />
+
+                                  <div
+                                    className="image-hover-opacity"
+                                    onClick={() => {
+                                      setFile(null);
+                                      setImagePreview(null);
+                                    }}
+                                  >
+                                    <div className="cross-icon">
+                                      <CrossIcon />
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : null}
+                              <button
+                                onClick={handleFileUpload}
+                                className="landing-nav-login--button"
+                              >
+                                Upload
+                              </button>
+                            </div>
+                          ) : (
+                            <div
+                              style={{ cursor: "pointer" }}
+                              onClick={handleAttachClick}
+                            >
+                              <AttachFileIcon />
+                            </div>
+                          )}
+                        </div>
+                      </div>
                       {/* <p style={{ marginTop: "17px" }}> {task.description}</p> */}
-                      <div className="task-detail-description-container">
-                        <textarea
-                          className="task-detail-edit-description"
-                          placeholder="Click to add team description..."
-                          value={teamDescription}
-                          onChange={handleDescriptionUpdate}
-                          onBlur={updateDescription}
-                        ></textarea>
+                      <div style={{ display: "flex" }}>
+                        <p>Description</p>
+                        <div className="task-detail-description-container">
+                          <textarea
+                            className="task-detail-edit-description"
+                            placeholder="Click to add team description..."
+                            value={teamDescription}
+                            onChange={handleDescriptionUpdate}
+                            onBlur={updateDescription}
+                          ></textarea>
+                        </div>
                       </div>
                     </div>
                   </div>

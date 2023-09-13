@@ -428,14 +428,18 @@
 }
 .task-details-subtitles > p {
   color: gray;
+  /* background-color: #0093ff; */
 }
 .task-details-data {
-  margin-left: 25px;
-  margin-top: 10px;
+  /* margin-left: 25px;
+  margin-top: 10px; */
   width: 100%;
+  /* background-color: rgb(161, 255, 255); */
 }
-.task-details-data > p {
+.task-details-data p {
   font-weight: 500;
+  color: gray;
+  margin-right: 10px;
 }
 .task-detail-description-container {
   padding: 4px;
@@ -1016,4 +1020,55 @@
 .task-project-40 {
   /* background: lawngreen; */
   background-color: rgba(124, 252, 0, 0.8);
+}
+
+.image-hover-opacity {
+  /* display: none; */
+  background-color: black;
+  opacity: 0.4;
+  width: 80px;
+  height: 80px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 2px solid;
+  cursor: pointer;
+}
+.image-hover-opacity:hover {
+  display: block;
+  /* margin-left: 20px; */
+}
+.image-preview:hover {
+  box-shadow: 0 5px 15px #b3b3b3;
+}
+.cross-icon {
+  background-color: #fff;
+
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 10px;
+  margin-top: 1px;
+  margin-left: 1px;
+  padding: 4px;
+}
+.landing-nav-login--button {
+  margin: 0 0px;
+  color: white;
+  padding: 3px 43px;
+  background: none;
+  outline: none;
+  text-decoration: none;
+  border: 2px solid transparent;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 1.17em;
+}
+.landing-nav-login--button:hover {
+  border: 2px solid #0093ff;
+  background-color: #0093ff;
+  margin: 0 0px;
 }
