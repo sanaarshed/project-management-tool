@@ -8,7 +8,9 @@ import UserAvatar from "../NavigationBar/UserAvatar";
 import apiServer from "../../config/apiServer";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { BsFileEarmarkArrowUp } from "react-icons/bs";
 import { BiCheck } from "react-icons/bi";
+
 
 const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
   const [taskState, taskdispatch] = useContext(TaskContext);
@@ -19,6 +21,8 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
   const [assigneeUser, setAssigneeUser] = useState(task.User);
   const [taskComments, setTaskComments] = useState(task.Comments);
   const [dueDate, setDueDate] = useState(new Date(task.due_date));
+  const [selectedFile, setSelectedFile] = useState(null);
+const [uploading, setUploading] = useState(false);
   // const [completed, setCompleted] = useState(task.completed);
   const [commentBox, setCommentBox] = useState(false);
 
@@ -28,7 +32,7 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
     "YYYYMMDD"
   );
 
-  console.log(task);
+  console.log("ffffffffff",task.Files);
   // console.log(task.due_date, "task.due_date DB");
   // console.log(date, "moment date convert from db");
   // console.log(dueDate, "dueDate state new Date convert ");
@@ -50,6 +54,36 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
     updateProject();
   };
 
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+  };
+
+  const handleFileUpload = async () => {
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append("taskId", task.id); // Add taskId to the form data
+      formData.append("file", selectedFile);
+  
+      try {
+        setUploading(true);
+        // Send a POST request to your server to upload the file
+        await apiServer.post("/file/upload", formData);
+        // Handle success, e.g., show a success message
+        console.log("File uploaded successfully");
+        // Clear the selected file
+        setSelectedFile(null);
+      } catch (error) {
+        // Handle errors, e.g., show an error message
+        console.error("File upload failed:", error);
+      } finally {
+        setUploading(false);
+      }
+    }
+  };
+  
+  
+
   const updateProject = async (e) => {
     var projectId = document.getElementById("project-select").value;
     const userId = localStorage.getItem("userId");
@@ -68,6 +102,7 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
     //updates tasks
     const userId = localStorage.getItem("userId");
     const res = await apiServer.get(`/task/user/${userId}`);
+    console.log("ddd",res)
     await taskdispatch({ type: "get_user_tasks", payload: res.data });
   };
 
@@ -380,6 +415,50 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
                           onBlur={updateDescription}
                         ></textarea>
                       </div>
+
+
+                      <div className="file-upload-container">
+  <input
+    type="file"
+    id="file-input"
+    accept=".pdf, .doc, .docx, .jpg, .jpeg, .png" // Define the accepted file types
+    onChange={handleFileSelect}
+    style={{ display: "none" }}
+  />
+  <label htmlFor="file-input" className="file-upload-label">
+    <BsFileEarmarkArrowUp className="file-upload-icon" />
+    Upload File
+  </label>
+  {selectedFile && (
+    <button
+      className="file-upload-button"
+      onClick={handleFileUpload}
+      disabled={uploading}
+    >
+      {uploading ? "Uploading..." : "Upload"}
+    </button>
+  )}
+</div>
+
+
+
+
+<div className="image-gallery">
+      {task.Files.map((image, index) => (
+        <div key={index} className="image-item">
+          <img
+            src={image.path} // Adjust the URL to match your server's image path
+            alt={image.name}
+            className="image"
+          />
+          <p className="image-name">{image.name}</p>
+        </div>
+      ))}
+    </div>
+
+
+
+
                     </div>
                   </div>
                 </form>
