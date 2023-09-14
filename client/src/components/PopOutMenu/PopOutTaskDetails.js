@@ -462,7 +462,7 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
                           )}
                         </div>
                         <div className="image-gallery">
-                          {task.Files?.map((image, index) => (
+                          {allFiles?.map((image, index) => (
                             <div>
                               <div key={index} className="image-item">
                                 <img
