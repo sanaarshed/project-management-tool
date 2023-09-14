@@ -81,14 +81,17 @@ const TaskForm = ({
     completed,
     description,
   }) => {
-    await apiServer.post(`/tasklist/${tasklistId}/task`, {
-      name,
-      projectId,
-      assigneeId,
-      due_date,
-      completed,
-      description,
-    });
+    console.log("  tasklistId,--->", tasklistId);
+
+    // if(projectTaskLists.length>0)
+    // await apiServer.post(`/tasklist/${tasklistId}/task`, {
+    //   name,
+    //   projectId,
+    //   assigneeId,
+    //   due_date,
+    //   completed,
+    //   description,
+    // });
 
     // const res = await apiServer.get(
     //   `/project/user/${localStorage.getItem("userId")}`
@@ -243,13 +246,7 @@ const TaskForm = ({
                 })}
               >
                 {/* <option value={0}>Choose a project first</option> */}
-                {projectTaskLists.length === 0 ? (
-                  <option>
-                    You need to make a column in your project first.
-                  </option>
-                ) : (
-                  renderedTasklists
-                )}
+                {projectTaskLists.length > 0 ? renderedTasklists : null}
                 {/* {renderedTasklists} */}
               </select>
               {/* <p className="error-message">{taskListError}</p> */}
@@ -259,6 +256,11 @@ const TaskForm = ({
                   project first before adding a task.
                 </p>
               )}
+              {projectTaskLists.length === 0 ? (
+                <p className="error-message">
+                  You need to make a column in your project first.
+                </p>
+              ) : null}
             </div>
           </div>
         </div>

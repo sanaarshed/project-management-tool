@@ -16,11 +16,10 @@
     "react-hook-form": "^6.11.0",
     "react-icons": "^3.11.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.0",
+    "react-scripts": "^5.0.1",
     "web-vitals": "^0.2.4"
   },
   "scripts": {
-    "startt": "node_modules/.bin/react-scripts start",
     "start": "react-scripts start",
     "build": "node_modules/.bin/react-scripts build",
     "test": "react-scripts test",
