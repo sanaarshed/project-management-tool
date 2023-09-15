@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { RiCloseLine } from "react-icons/ri";
 import { Context as TaskContext } from "../../context/store/TaskStore";
@@ -10,7 +10,11 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { BsFileEarmarkArrowUp } from "react-icons/bs";
 import { BiCheck } from "react-icons/bi";
-
+import AttachFileIcon from "../../assets/Attach";
+import PdfFileIcon from "../../assets/pdf-file.svg";
+import PsdFileIcon from "../../assets/psd-file.svg";
+import DocFileIcon from "../../assets/doc-file.svg";
+import DownloadICon from "../../assets/download-icon.svg";
 
 const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
   const [taskState, taskdispatch] = useContext(TaskContext);
@@ -22,9 +26,11 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
   const [taskComments, setTaskComments] = useState(task.Comments);
   const [dueDate, setDueDate] = useState(new Date(task.due_date));
   const [selectedFile, setSelectedFile] = useState(null);
-const [uploading, setUploading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   // const [completed, setCompleted] = useState(task.completed);
   const [commentBox, setCommentBox] = useState(false);
+  const [allFiles, setFiles] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   var completed = task.completed;
   const date = moment(
@@ -32,7 +38,7 @@ const [uploading, setUploading] = useState(false);
     "YYYYMMDD"
   );
 
-  console.log("ffffffffff",task.Files);
+  console.log("ffffffffff", task.Files);
   // console.log(task.due_date, "task.due_date DB");
   // console.log(date, "moment date convert from db");
   // console.log(dueDate, "dueDate state new Date convert ");
@@ -53,10 +59,18 @@ const [uploading, setUploading] = useState(false);
     setProjectUsers(userList);
     updateProject();
   };
+  useEffect(() => {
+    if (task.Files) setFiles(task.Files);
+  }, [task]);
 
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
+  };
+
+  const downloadFile = async (id) => {
+    console.log("downlaod File--->");
+    await apiServer.get(`/file/${id}`);
   };
 
   const handleFileUpload = async () => {
@@ -64,13 +78,16 @@ const [uploading, setUploading] = useState(false);
       const formData = new FormData();
       formData.append("taskId", task.id); // Add taskId to the form data
       formData.append("file", selectedFile);
-  
+
       try {
         setUploading(true);
         // Send a POST request to your server to upload the file
         await apiServer.post("/file/upload", formData);
         // Handle success, e.g., show a success message
         console.log("File uploaded successfully");
+        //get all the task data again
+        const res = await apiServer.get(`/task/${task.id}`);
+        setFiles(res.data.Files);
         // Clear the selected file
         setSelectedFile(null);
       } catch (error) {
@@ -81,13 +98,11 @@ const [uploading, setUploading] = useState(false);
       }
     }
   };
-  
-  
 
   const updateProject = async (e) => {
     var projectId = document.getElementById("project-select").value;
     const userId = localStorage.getItem("userId");
-    console.log(projectId);
+    console.log("projectId-->", projectId);
     await apiServer.put(`/task/${task.id}/project/${projectId}`);
     const res = await apiServer.get(`/task/user/${userId}`);
     await taskdispatch({ type: "get_user_tasks", payload: res.data });
@@ -102,7 +117,7 @@ const [uploading, setUploading] = useState(false);
     //updates tasks
     const userId = localStorage.getItem("userId");
     const res = await apiServer.get(`/task/user/${userId}`);
-    console.log("ddd",res)
+    console.log("ddd", res);
     await taskdispatch({ type: "get_user_tasks", payload: res.data });
   };
 
@@ -239,6 +254,16 @@ const [uploading, setUploading] = useState(false);
             overflow: "hidden",
           }}
         >
+          {selectedImage && (
+            <div
+              className="image-preview-overlay"
+              onClick={() => setSelectedImage(null)}
+            >
+              <div className="image-preview">
+                <img src={selectedImage} alt="Selected Image" />
+              </div>
+            </div>
+          )}
           <div className="task-detail-menu-container">
             <div className="task-detail-menu-top">
               <div
@@ -317,6 +342,7 @@ const [uploading, setUploading] = useState(false);
                       <p>Due Date</p>
                       <p>Project</p>
                       <p>Description</p>
+                      <p style={{ marginTop: "120px" }}>Attach File</p>
                     </div>
                     <div className="task-details-data">
                       <div
@@ -348,6 +374,7 @@ const [uploading, setUploading] = useState(false);
                             id={task.User.id}
                             selected
                           >
+                            {/* changes need to be done here as we can have access to all the team members */}
                             {task.User.name}
                           </option>
                           {renderedUsers}
@@ -405,7 +432,6 @@ const [uploading, setUploading] = useState(false);
                         {/* <p style={{ margin: 0 }}> {task.Project.name}</p> */}
                       </div>
 
-                      {/* <p style={{ marginTop: "17px" }}> {task.description}</p> */}
                       <div className="task-detail-description-container">
                         <textarea
                           className="task-detail-edit-description"
@@ -416,49 +442,95 @@ const [uploading, setUploading] = useState(false);
                         ></textarea>
                       </div>
 
-
                       <div className="file-upload-container">
-  <input
-    type="file"
-    id="file-input"
-    accept=".pdf, .doc, .docx, .jpg, .jpeg, .png" // Define the accepted file types
-    onChange={handleFileSelect}
-    style={{ display: "none" }}
-  />
-  <label htmlFor="file-input" className="file-upload-label">
-    <BsFileEarmarkArrowUp className="file-upload-icon" />
-    Upload File
-  </label>
-  {selectedFile && (
-    <button
-      className="file-upload-button"
-      onClick={handleFileUpload}
-      disabled={uploading}
-    >
-      {uploading ? "Uploading..." : "Upload"}
-    </button>
-  )}
-</div>
+                        <div>
+                          <input
+                            type="file"
+                            id="file-input"
+                            accept=".pdf, .doc, .docx, .jpg, .jpeg, .png" // Define the accepted file types
+                            onChange={handleFileSelect}
+                            style={{ display: "none" }}
+                          />
+                          <label
+                            htmlFor="file-input"
+                            className="file-upload-icon"
+                          >
+                            <AttachFileIcon />
+                          </label>
+                          {selectedFile && (
+                            <div>
+                              <button
+                                className="file-upload-button"
+                                onClick={handleFileUpload}
+                                disabled={uploading}
+                              >
+                                {uploading ? "Uploading..." : "Upload"}
+                              </button>
+                              <p>{selectedFile.name}</p>
+                            </div>
+                          )}
+                        </div>
+                        <div className="image-gallery">
+                          {allFiles?.map((image, index) => {
+                            console.log("image--->", image);
+                            // extract from file name
+                            const fileName = image.name;
+                            const fileExtension = fileName.split(".").pop();
 
+                            return (
+                              <div>
+                                <div className="files-container">
+                                  <div
+                                    className="download-overlay"
+                                    onClick={() => downloadFile(image.id)}
+                                  >
+                                    <img
+                                      className="download-icon"
+                                      src={DownloadICon}
+                                    />
+                                  </div>
+                                  {fileExtension === "pdf" ? (
+                                    <img
+                                      className="file-icon"
+                                      src={PdfFileIcon}
+                                    />
+                                  ) : null}
+                                  {fileExtension === "psd" ? (
+                                    <img
+                                      className="file-icon"
+                                      src={PsdFileIcon}
+                                    />
+                                  ) : null}
+                                  {fileExtension === "doc" ||
+                                  fileExtension === "docx" ? (
+                                    <img
+                                      className="file-icon"
+                                      src={DocFileIcon}
+                                    />
+                                  ) : null}
+                                </div>
 
+                                {fileExtension === "jpeg" ||
+                                fileExtension === "jpg" ||
+                                fileExtension === "png" ? (
+                                  <div key={index} className="image-item">
+                                    <img
+                                      className="images-preview"
+                                      src={image.path} // Adjust the URL to match your server's image path
+                                      alt={image.name}
+                                      onClick={() =>
+                                        setSelectedImage(image.path)
+                                      }
+                                    />
+                                  </div>
+                                ) : null}
 
-
-<div className="image-gallery">
-      {task.Files.map((image, index) => (
-        <div key={index} className="image-item">
-          <img
-            src={image.path} // Adjust the URL to match your server's image path
-            alt={image.name}
-            className="image"
-          />
-          <p className="image-name">{image.name}</p>
-        </div>
-      ))}
-    </div>
-
-
-
-
+                                <p className="image-name">{image.name}</p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </form>

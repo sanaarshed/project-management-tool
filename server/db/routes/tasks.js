@@ -337,7 +337,7 @@ router.delete(
   asyncHandler(async (req, res, next) => {
     const task_id = req.params.id;
 
-    const task = await Task.destroy({
+    await Task.destroy({
       where: { id: task_id },
     });
     res.json(202);

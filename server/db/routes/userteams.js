@@ -48,4 +48,14 @@ router.get(
   })
 );
 
+router.get(
+  "/:id",
+  asyncHandler(async (req, res, next) => {
+    const userteams = await UserTeam.findAll({      where: {
+      team_id: req.params.id,
+    }});
+    res.json(userteams);
+  })
+);
+
 module.exports = router;

@@ -34,7 +34,7 @@ const validateEmailPassword = [
 //Get user Information
 router.get(
   "/user/:id",
-  requireAuth,
+  // requireAuth,
   asyncHandler(async (req, res, next) => {
     const user_id = req.params.id;
     const user = await User.findOne({
@@ -50,7 +50,7 @@ router.get(
 
 router.get(
   "/users",
-  requireAuth,
+  // requireAuth,
   asyncHandler(async (req, res, next) => {
     const users = await User.findAll({
       attributes: ["id", "name", "email"],
@@ -156,6 +156,8 @@ router.post(
   asyncHandler(async (req, res, next) => {
     const validatorErr = validationResult(req);
 
+    console.log("req.body--->", req.body);
+
     if (!validatorErr.isEmpty()) {
       const errors = validatorErr.array().map((error) => error.msg);
       res.json(["ERRORS", ...errors]);
@@ -171,6 +173,7 @@ router.post(
         email,
       },
     });
+    console.log("find user.email--->", user.email);
 
     if (!user || !user.validatePassword(password)) {
       const err = new Error("Login Failed");
