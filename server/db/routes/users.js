@@ -156,6 +156,8 @@ router.post(
   asyncHandler(async (req, res, next) => {
     const validatorErr = validationResult(req);
 
+    console.log("req.body--->", req.body);
+
     if (!validatorErr.isEmpty()) {
       const errors = validatorErr.array().map((error) => error.msg);
       res.json(["ERRORS", ...errors]);
@@ -171,6 +173,7 @@ router.post(
         email,
       },
     });
+    console.log("find user.email--->", user.email);
 
     if (!user || !user.validatePassword(password)) {
       const err = new Error("Login Failed");

@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 import AddProjectPopOut from "../PopOutMenu/AddProjectPopOut";
 import AddTaskPopOutTaskPage from "../PopOutMenu/AddTaskPopOutTaskPage";
 import PopOutTaskDetailsHome from "../PopOutMenu/PopOutTaskDetailsHome";
+import PopOutTaskDetails from "../PopOutMenu/PopOutTaskDetails";
 
 const HomePage = () => {
   // debugger;
@@ -213,7 +214,7 @@ const HomePage = () => {
               />
             ) : null}
             {sideTaskDetails && taskState.selectedTask ? (
-              <PopOutTaskDetailsHome
+              <PopOutTaskDetails
                 showSideTaskDetails={showSideTaskDetails}
                 sideTaskDetails={sideTaskDetails}
               />

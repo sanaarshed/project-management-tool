@@ -29,6 +29,9 @@ const AuthRoutes = () => {
   const getUserInfo = async () => {
     const id = localStorage.getItem("userId");
     const res = await apiServer.get(`/user/${id}`);
+
+    // .catch((e) => console.log("e--->", e));
+    console.log("--->", res);
     await userdispatch({ type: "get_user_info", payload: res.data });
   };
 
@@ -40,6 +43,7 @@ const AuthRoutes = () => {
 
   const getUserTeams = async () => {
     const id = localStorage.getItem("userId");
+    console.log("id--->", id);
     const res = await apiServer.get(`/team/user/${id}`);
     await teamdispatch({ type: "get_user_teams", payload: res.data });
   };
