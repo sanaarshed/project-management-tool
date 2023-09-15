@@ -182,3 +182,14 @@
   fill: #fff;
   cursor: pointer;
 }
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+}
+.input-in-form {
+  margin-top: 5px;
+  padding: 15px;
+  border: 0.1px solid gray;
+  border-radius: 6px;
+}

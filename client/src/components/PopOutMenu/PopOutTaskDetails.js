@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { RiCloseLine } from "react-icons/ri";
+import { MdDelete } from "react-icons/md";
 import { Context as TaskContext } from "../../context/store/TaskStore";
 import { Context as ProjectContext } from "../../context/store/ProjectStore";
 import moment from "moment";
@@ -16,7 +17,12 @@ import PsdFileIcon from "../../assets/psd-file.svg";
 import DocFileIcon from "../../assets/doc-file.svg";
 import DownloadICon from "../../assets/download-icon.svg";
 
-const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
+const PopOutTaskDetails = ({
+  showSideTaskDetails,
+  sideTaskDetails,
+  setTasklists,
+  selectedProjectId,
+}) => {
   const [taskState, taskdispatch] = useContext(TaskContext);
   const { selectedTask: task } = taskState;
   const [projectState, projectdispatch] = useContext(ProjectContext);
@@ -31,14 +37,14 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
   const [commentBox, setCommentBox] = useState(false);
   const [allFiles, setFiles] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
-
+  const userId = localStorage.getItem("userId");
   var completed = task.completed;
   const date = moment(
     task.due_date.substring(0, 10).replace("-", ""),
     "YYYYMMDD"
   );
 
-  console.log("ffffffffff", task.Files);
+  // console.log("ffffffffff", task.Files);
   // console.log(task.due_date, "task.due_date DB");
   // console.log(date, "moment date convert from db");
   // console.log(dueDate, "dueDate state new Date convert ");
@@ -70,7 +76,23 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
 
   const downloadFile = async (id) => {
     console.log("downlaod File--->");
-    await apiServer.get(`/file/${id}`);
+    // await apiServer.get(`/file/download/${id}`);
+    const fileUrl = `${process.env.REACT_APP_BASE_URL}/file/download/${id}`;
+
+    // Create a hidden anchor element
+    const anchor = document.createElement("a");
+    anchor.style.display = "none";
+    anchor.href = fileUrl;
+    // anchor.download = "your-file-name.ext"; // You can specify the desired file name here
+
+    // Add the anchor element to the DOM
+    document.body.appendChild(anchor);
+
+    // Simulate a click event to trigger the download
+    anchor.click();
+
+    // Clean up by removing the anchor element
+    document.body.removeChild(anchor);
   };
 
   const handleFileUpload = async () => {
@@ -98,14 +120,16 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
       }
     }
   };
-
-  const updateProject = async (e) => {
-    var projectId = document.getElementById("project-select").value;
-    const userId = localStorage.getItem("userId");
-    console.log("projectId-->", projectId);
-    await apiServer.put(`/task/${task.id}/project/${projectId}`);
+  const getlatestData = async () => {
     const res = await apiServer.get(`/task/user/${userId}`);
     await taskdispatch({ type: "get_user_tasks", payload: res.data });
+  };
+  const updateProject = async (e) => {
+    var projectId = document.getElementById("project-select").value;
+    // const userId = localStorage.getItem("userId");
+    console.log("projectId-->", projectId);
+    await apiServer.put(`/task/${task.id}/project/${projectId}`);
+    getlatestData();
   };
 
   const updateAssignee = async (e) => {
@@ -115,10 +139,8 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
     const assignee = await apiServer.get(`/task/${task.id}`);
     setAssigneeUser(assignee.data.User);
     //updates tasks
-    const userId = localStorage.getItem("userId");
-    const res = await apiServer.get(`/task/user/${userId}`);
-    console.log("ddd", res);
-    await taskdispatch({ type: "get_user_tasks", payload: res.data });
+    // const userId = localStorage.getItem("userId");
+    getlatestData();
   };
 
   const updateDueDate = async (date) => {
@@ -138,7 +160,7 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
   };
 
   const handleCommentSubmit = async ({ text }) => {
-    const user_id = localStorage.getItem("userId");
+    // const user_id = localStorage.getItem("userId");
     await apiServer.post(`/task/${task.id}/comment`, {
       text,
       user_id,
@@ -156,7 +178,7 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
   const updateComplete = async () => {
     // console.log(completed, "before");
     completed = !completed;
-    const userId = localStorage.getItem("userId");
+    // const userId = localStorage.getItem("userId");
     // console.log(completed, "after");
 
     const updatedTask = await apiServer.put(`/task/${task.id}/complete`, {
@@ -169,8 +191,7 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
 
     // console.log(task, "after update");
 
-    const res = await apiServer.get(`/task/user/${userId}`);
-    await taskdispatch({ type: "get_user_tasks", payload: res.data });
+    getlatestData();
   };
   const expandCommentBox = () => {
     setCommentBox(!commentBox);
@@ -179,6 +200,15 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
   function updateScroll() {
     var element = document.getElementById("scrollable");
     element.scrollTop = element.scrollHeight;
+  }
+  async function deleteTask() {
+    showSideTaskDetails();
+    await apiServer.delete(`/task/${task.id}`).then(async () => {
+      const resp = await apiServer.get(
+        `/project/${selectedProjectId}/tasklists`
+      );
+      setTasklists(resp.data);
+    });
   }
   const renderedProjects = projectState.projects
     .filter((project) => {
@@ -304,15 +334,27 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
                   </div>
                 </div>
               </div>
-              <div className="task-detail-close-icon">
-                <RiCloseLine
-                  style={{
-                    color: "black",
-                    fontSize: "24px",
-                    cursor: "pointer",
-                  }}
-                  onClick={showSideTaskDetails}
-                />
+              <div className="flex ">
+                <div className="task-detail-close-icon">
+                  <MdDelete
+                    style={{
+                      color: "#ff3e3e",
+                      fontSize: "24px",
+                      cursor: "pointer",
+                    }}
+                    onClick={deleteTask}
+                  />
+                </div>
+                <div className="task-detail-close-icon">
+                  <RiCloseLine
+                    style={{
+                      color: "black",
+                      fontSize: "24px",
+                      cursor: "pointer",
+                    }}
+                    onClick={showSideTaskDetails}
+                  />
+                </div>
               </div>
             </div>
 
@@ -472,7 +514,6 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
                         </div>
                         <div className="image-gallery">
                           {allFiles?.map((image, index) => {
-                            console.log("image--->", image);
                             // extract from file name
                             const fileName = image.name;
                             const fileExtension = fileName.split(".").pop();
@@ -563,7 +604,7 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
                   className="task-detail-comment-avatar"
                   style={{ width: "25px", height: "25px", fontSize: "10px" }}
                 >
-                  <UserAvatar id={localStorage.getItem("userId")} />
+                  <UserAvatar id={userId} />
                 </div>
                 <div className="task-detail-comment-box">
                   <form

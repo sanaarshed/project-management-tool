@@ -43,7 +43,7 @@ const TaskItemTask = ({
       setInitialLoad(false);
       console.log("if popout");
     } else {
-      console.log("else popout");
+      // console.log("else popout");
       taskdispatch({ type: "get_selected_task", payload: null });
       const res = await apiServer.get(`/task/${task.id}`);
       await taskdispatch({ type: "get_selected_task", payload: res.data });

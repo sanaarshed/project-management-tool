@@ -91,6 +91,8 @@ const NewTasks = () => {
             {renderedTasks}
             {/* <TaskSection title={"Tasks"} tasks={sortedTasks} /> */}
           </div>
+
+          {/* the page where all the tasks listed */}
           {sideTaskDetails && taskState.selectedTask ? (
             <PopOutTaskDetails
               showSideTaskDetails={showSideTaskDetails}

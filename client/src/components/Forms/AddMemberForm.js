@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../../css/Task.css";
 import Button from "@material-ui/core/Button";
-import { Modal } from "@material-ui/core";
+import { Modal, TextField } from "@material-ui/core";
 import { useForm } from "react-hook-form";
 import apiServer from "../../config/apiServer";
 import Loader from "../Loader";
@@ -11,6 +11,7 @@ const AddMemberForm = ({ teamId, clickClose, open, setTeamUsers }) => {
   const [users, setUsers] = useState();
   const [error, setError] = useState();
   const [loading, setLoading] = useState(true);
+  const [inviteEmail, setinviteEmail] = useState("");
 
   const onSubmit = async ({ userId }) => {
     try {
@@ -24,6 +25,10 @@ const AddMemberForm = ({ teamId, clickClose, open, setTeamUsers }) => {
     }
 
     // const res = await apiServer.get(`/project/${projectId}/tasklists`);
+  };
+
+  const handleSendEmailInvite = async () => {
+    console.log("handleSendEmailInvite--->");
   };
 
   const getAllUsers = async () => {
@@ -50,14 +55,10 @@ const AddMemberForm = ({ teamId, clickClose, open, setTeamUsers }) => {
     <div>
       <Modal open={open} onClose={clickClose}>
         <div className="tasklist-modal-container" style={{ minWidth: "auto" }}>
-          <form
-            className="task-form"
-            style={{}}
-            onSubmit={handleSubmit(onSubmit)}
-          >
+          <form className="task-form" onSubmit={handleSubmit(onSubmit)}>
             <h2 className="form-header">Add a member to the team!</h2>
             <div className="form-top-container">
-              <div className="form-top-left">
+              <div className="form-content">
                 <label className="form-label">
                   <select
                     id="user-select"
@@ -65,18 +66,34 @@ const AddMemberForm = ({ teamId, clickClose, open, setTeamUsers }) => {
                     className="form-input"
                     onChange={() => setError("")}
                     ref={register({ required: true })}
+                    placeholder="<---Choose user--->"
                   >
-                    <option value={0}>{"<---Choose user--->"}</option>
+                    {/* <option value={0}>{"<---Choose user--->"}</option> */}
                     {renderedUsers}
                   </select>
+
                   <div className="error-message">{error}</div>
                   {errors.projectId?.type === "required" && (
                     <p className="error-message">Please choose a user to add</p>
                   )}
                 </label>
+                <div className="flex justify-center gap-1 mt-2">
+                  <TextField
+                    size="small"
+                    variant="outlined"
+                    value={inviteEmail}
+                    onChange={(e) => setinviteEmail(e.target.value)}
+                    placeholder="Invite email"
+                  />
+                  <Button
+                    style={{ color: "#0093ff" }}
+                    onClick={handleSendEmailInvite}
+                    variant="contained"
+                  >
+                    Invite
+                  </Button>
+                </div>
               </div>
-              <div className="form-top-middle"></div>
-              <div className="form-top-right"></div>
             </div>
 
             <div style={{ display: "flex", marginLeft: "160px" }}>

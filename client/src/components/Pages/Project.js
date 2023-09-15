@@ -335,6 +335,8 @@ const ProjectPage = ({ sidebar }) => {
             <PopOutTaskDetails
               showSideTaskDetails={showSideTaskDetails}
               sideTaskDetails={sideTaskDetails}
+              setTasklists={setTasklists}
+              selectedProjectId={projectId}
             />
           ) : null}
           {sideTasklistForm ? (

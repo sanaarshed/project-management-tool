@@ -387,6 +387,7 @@
   display: flex;
   border: 1px solid lightgreen;
   cursor: pointer;
+  justify-content: center;
 }
 .check-mark-container {
   margin: 0px 5px;

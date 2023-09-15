@@ -48,7 +48,7 @@ const TaskItemHome = ({ task, showSideTaskDetails, sideTaskDetails }) => {
       // setInitialLoad(false);
       console.log("if popout");
     } else {
-      console.log("else popout");
+      // console.log("else popout");
       taskdispatch({ type: "get_selected_task", payload: null });
       const res = await apiServer.get(`/task/${task.id}`);
       await taskdispatch({ type: "get_selected_task", payload: res.data });
@@ -78,7 +78,11 @@ const TaskItemHome = ({ task, showSideTaskDetails, sideTaskDetails }) => {
     <>
       <div className="task-home-item">
         <div className="task-home-item-inner-container">
-          <div className="task-home-item-inner-left" onClick={setTaskPopOut}>
+          <div
+            style={{ backgroundColor: "res" }}
+            className="task-home-item-inner-left"
+            onClick={setTaskPopOut}
+          >
             <div className="task-home-item-icon-container">
               {/* {task.completed ? (
                 <RiCheckboxCircleLine
