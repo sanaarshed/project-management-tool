@@ -60,34 +60,34 @@ router.post(
 );
 
 
-// router.get("/:id", asyncHandler(async (req, res, next) => {
-//   const file_id = req.params.id;
-//   const file = await File.findOne({
-//     where: {
-//       id: file_id,
-//     },
-//   });
+router.get("/download/:id", asyncHandler(async (req, res, next) => {
+  const file_id = req.params.id;
+  const file = await File.findOne({
+    where: {
+      id: file_id,
+    },
+  });
 
-//   if (!file) {
-//     return res.status(404).json({ message: "File not found." });
-//   }
+  if (!file) {
+    return res.status(404).json({ message: "File not found." });
+  }
 
-//   // Get the file path
-//   const filePath = file.path;
+  // Get the file path
+  const filePath = file.path;
 
-//   // Check if the file exists
-//   if (!fs.existsSync(filePath)) {
-//     return res.status(404).json({ message: "File not found on the server." });
-//   }
+  // Check if the file exists
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ message: "File not found on the server." });
+  }
 
-//   // Set appropriate headers for the response
-//   res.setHeader("Content-Disposition", `attachment; filename=${file.name}`);
-//   res.setHeader("Content-Type", "application/octet-stream");
+  // Set appropriate headers for the response
+  res.setHeader("Content-Disposition", `attachment; filename=${file.name}`);
+  res.setHeader("Content-Type", "application/octet-stream");
 
-//   // Create a readable stream from the file and pipe it to the response
-//   const fileStream = fs.createReadStream(filePath);
-//   fileStream.pipe(res);
-// }));
+  // Create a readable stream from the file and pipe it to the response
+  const fileStream = fs.createReadStream(filePath);
+  fileStream.pipe(res);
+}));
 
 
 router.get("/:fileName",async (req, res) => {
