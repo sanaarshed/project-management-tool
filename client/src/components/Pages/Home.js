@@ -18,7 +18,7 @@ import PopOutTaskDetails from "../PopOutMenu/PopOutTaskDetails";
 const HomePage = () => {
   // debugger;
   const [userState] = useContext(UserContext);
-  const [taskState] = useContext(TaskContext);
+  const [taskState, taskdispatch] = useContext(TaskContext);
   const [projectState] = useContext(ProjectContext);
   // const [teamProjects,setTeamProjects] = useState();
   const [sideTaskForm, setSideTaskForm] = useState(false);
@@ -30,6 +30,11 @@ const HomePage = () => {
     setSideTaskForm(!sideTaskForm);
   };
 
+  const refrehData = async () => {
+    const id = localStorage.getItem("userId");
+    const res = await apiServer.get(`/task/user/${id}`);
+    await taskdispatch({ type: "get_user_tasks", payload: res.data });
+  };
   const showSideProjectForm = () => {
     setSideTaskDetails(false);
     setSideTaskForm(false);
@@ -217,6 +222,7 @@ const HomePage = () => {
               <PopOutTaskDetails
                 showSideTaskDetails={showSideTaskDetails}
                 sideTaskDetails={sideTaskDetails}
+                refrehData={refrehData}
               />
             ) : null}
           </div>

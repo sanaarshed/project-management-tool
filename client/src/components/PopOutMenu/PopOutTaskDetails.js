@@ -22,6 +22,7 @@ const PopOutTaskDetails = ({
   sideTaskDetails,
   setTasklists,
   selectedProjectId,
+  refrehData,
 }) => {
   const [taskState, taskdispatch] = useContext(TaskContext);
   const { selectedTask: task } = taskState;
@@ -204,10 +205,7 @@ const PopOutTaskDetails = ({
   async function deleteTask() {
     showSideTaskDetails();
     await apiServer.delete(`/task/${task.id}`).then(async () => {
-      const resp = await apiServer.get(
-        `/project/${selectedProjectId}/tasklists`
-      );
-      setTasklists(resp.data);
+      refrehData && refrehData();
     });
   }
   const renderedProjects = projectState.projects

@@ -97,6 +97,7 @@ const NewTasks = () => {
             <PopOutTaskDetails
               showSideTaskDetails={showSideTaskDetails}
               sideTaskDetails={sideTaskDetails}
+              refrehData={getUserTasks}
             />
           ) : null}
           {sideTaskForm ? (
