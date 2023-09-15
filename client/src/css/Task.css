@@ -1071,3 +1071,31 @@
   height: 100%;
   object-fit: contain;
 }
+
+.files-container {
+  position: relative;
+}
+
+.download-overlay {
+  background-color: #151b26;
+  opacity: 0;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 90px;
+  width: 100%;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+}
+.files-container:hover .download-overlay {
+  opacity: 0.5;
+}
+
+.download-icon {
+  height: 30px;
+  width: 30px;
+  /* mix-blend-mode: lighten; */
+}

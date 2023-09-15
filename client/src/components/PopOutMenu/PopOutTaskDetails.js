@@ -11,6 +11,10 @@ import "react-datepicker/dist/react-datepicker.css";
 import { BsFileEarmarkArrowUp } from "react-icons/bs";
 import { BiCheck } from "react-icons/bi";
 import AttachFileIcon from "../../assets/Attach";
+import PdfFileIcon from "../../assets/pdf-file.svg";
+import PsdFileIcon from "../../assets/psd-file.svg";
+import DocFileIcon from "../../assets/doc-file.svg";
+import DownloadICon from "../../assets/download-icon.svg";
 
 const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
   const [taskState, taskdispatch] = useContext(TaskContext);
@@ -62,6 +66,11 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
+  };
+
+  const downloadFile = async (id) => {
+    console.log("downlaod File--->");
+    await apiServer.get(`/file/${id}`);
   };
 
   const handleFileUpload = async () => {
@@ -462,19 +471,64 @@ const PopOutTaskDetails = ({ showSideTaskDetails, sideTaskDetails }) => {
                           )}
                         </div>
                         <div className="image-gallery">
-                          {allFiles?.map((image, index) => (
-                            <div>
-                              <div key={index} className="image-item">
-                                <img
-                                  className="images-preview"
-                                  src={image.path} // Adjust the URL to match your server's image path
-                                  alt={image.name}
-                                  onClick={() => setSelectedImage(image.path)}
-                                />
+                          {allFiles?.map((image, index) => {
+                            console.log("image--->", image);
+                            // extract from file name
+                            const fileName = image.name;
+                            const fileExtension = fileName.split(".").pop();
+
+                            return (
+                              <div>
+                                <div className="files-container">
+                                  <div
+                                    className="download-overlay"
+                                    onClick={() => downloadFile(image.id)}
+                                  >
+                                    <img
+                                      className="download-icon"
+                                      src={DownloadICon}
+                                    />
+                                  </div>
+                                  {fileExtension === "pdf" ? (
+                                    <img
+                                      className="file-icon"
+                                      src={PdfFileIcon}
+                                    />
+                                  ) : null}
+                                  {fileExtension === "psd" ? (
+                                    <img
+                                      className="file-icon"
+                                      src={PsdFileIcon}
+                                    />
+                                  ) : null}
+                                  {fileExtension === "doc" ||
+                                  fileExtension === "docx" ? (
+                                    <img
+                                      className="file-icon"
+                                      src={DocFileIcon}
+                                    />
+                                  ) : null}
+                                </div>
+
+                                {fileExtension === "jpeg" ||
+                                fileExtension === "jpg" ||
+                                fileExtension === "png" ? (
+                                  <div key={index} className="image-item">
+                                    <img
+                                      className="images-preview"
+                                      src={image.path} // Adjust the URL to match your server's image path
+                                      alt={image.name}
+                                      onClick={() =>
+                                        setSelectedImage(image.path)
+                                      }
+                                    />
+                                  </div>
+                                ) : null}
+
+                                <p className="image-name">{image.name}</p>
                               </div>
-                              <p className="image-name">{image.name}</p>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </div>
                     </div>
