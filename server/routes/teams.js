@@ -2,21 +2,11 @@ const express = require("express");
 const { asyncHandler } = require("./utilities/utils");
 const { requireAuth } = require("./utilities/auth");
 const { check, validationResult } = require("express-validator");
-<<<<<<< Updated upstream:server/db/routes/teams.js
-const { Team, UserTeam, Project, UserProject } = require("../../db/models");
-const jwt = require("jsonwebtoken");
-const { Invitations, User } = require("../models");
-=======
-<<<<<<< Updated upstream:server/db/routes/teams.js
-const { Team, UserTeam, User, Project, UserProject } = require("../../db/models");
-const jwt = require("jsonwebtoken");
-const { Invitations } = require("../models");
-=======
+
 const { Team, UserTeam, Project, UserProject } = require("../db/models");
 const jwt = require("jsonwebtoken");
 const { Invitations, User } = require("../db/models");
->>>>>>> Stashed changes:server/routes/teams.js
->>>>>>> Stashed changes:server/routes/teams.js
+
 
 
 const router = express.Router();
