@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const { jwtConfig } = require("../../../config");
 const { User } = require("../../../db/models");
 const bearerToken = require("express-bearer-token");
+const datetime = require("date-and-time");
 const { secret, expiresIn } = jwtConfig;
 
 const getUserToken = (user) => {
@@ -9,11 +10,16 @@ const getUserToken = (user) => {
     id: user.id,
     email: user.email,
   };
+  const expiration_time = datetime.addHours(new Date(), 2); // Add 2 hours to the current time
+
+  // Convert the expiration time to a Unix timestamp (in seconds)
+  const exp_timestamp = Math.floor(expiration_time / 1000);
 
   // const token = jwt.sign({ data: userDataForToken }, secret);
   // const token = jwt.sign({ data: userDataForToken }, process.env.JWT_SECRET);
+  console.log("process.env.JWT_SECRET--->", process.env.JWT_SECRET);
   const token = jwt.sign({ data: userDataForToken }, process.env.JWT_SECRET, {
-    expiresIn: parseInt(process.env.JWT_EXPIRES_IN, 10),
+    expiresIn: exp_timestamp,
   });
 
   return token;
@@ -25,7 +31,7 @@ const restoreUser = (req, res, next) => {
   if (!token) {
     return res.set("WWW-Authenticate", "Bearer").status(401).end();
   }
-
+  console.log("token-->", token);
   //Changed jwt token here as well
   return jwt.verify(
     token,

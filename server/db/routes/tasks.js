@@ -2,7 +2,7 @@ const express = require("express");
 const { asyncHandler } = require("./utilities/utils");
 const { requireAuth } = require("./utilities/auth");
 const { check, validationResult } = require("express-validator");
-const { Task, Comment, Project, User } = require("../models");
+const { Task, Comment, Project, User, File } = require("../models");
 const comment = require("../../db/models/comment");
 
 const router = express.Router();
@@ -13,7 +13,7 @@ const router = express.Router();
 router.get(
   "/",
   asyncHandler(async (req, res, next) => {
-    const tasks = await Task.findAll({});
+    const tasks = await Task.findAll({include: [{ model: File }]});
 
     res.json(tasks);
   })
@@ -89,7 +89,6 @@ router.put(
           },
         }
       );
-      console.log("confirm");
       res.json(updateTask);
     } catch (err) {
       res.status(401).send({ error: "Something went wrong" });
@@ -121,6 +120,7 @@ router.get(
             attributes: ["id", "name", "email", "image"],
           },
         },
+        { model: File }
       ],
     });
     res.json(task);
@@ -337,7 +337,7 @@ router.delete(
   asyncHandler(async (req, res, next) => {
     const task_id = req.params.id;
 
-    const task = await Task.destroy({
+    await Task.destroy({
       where: { id: task_id },
     });
     res.json(202);

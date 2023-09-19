@@ -34,7 +34,6 @@ const PopOutTaskDetailsHome = ({ showSideTaskDetails, sideTaskDetails }) => {
   // console.log(dueDate, "dueDate state new Date convert ");
 
   const { register, handleSubmit, clearErrors } = useForm();
-
   //This doesn't do anything for initial
   const getProjectUsers = async (event) => {
     var projectSelect = document.getElementById("project-select");
