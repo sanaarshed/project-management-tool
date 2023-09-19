@@ -2,9 +2,11 @@ const express = require("express");
 const { asyncHandler } = require("./utilities/utils");
 const { requireAuth } = require("./utilities/auth");
 const { check, validationResult } = require("express-validator");
-const { Team, UserTeam, Project, UserProject } = require("../../db/models");
+
+const { Team, UserTeam, Project, UserProject } = require("../db/models");
 const jwt = require("jsonwebtoken");
-const { Invitations, User } = require("../models");
+const { Invitations, User } = require("../db/models");
+
 
 
 const router = express.Router();
