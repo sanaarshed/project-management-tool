@@ -26,14 +26,14 @@ const ResetPasswordForm = (props) => {
     }
   }, [currentURL]);
 
-  const onSubmit = async ({ newPassword, confirmPassword }) => {
-    if (newPassword === confirmPassword) {
+  const onSubmit = async ({ new_pass, confirmPassword }) => {
+    if (new_pass === confirmPassword) {
       setLoading(true);
       try {
-        const res = await apiServer.post(`/reset-password/${token}`, {
-          newPassword: newPassword,
+        const res = await apiServer.post(`/resetPassword/${token}`, {
+          newPassword: new_pass,
         });
-        if (res.status === 200) {
+        if (res.status === 204) {
           setLoading(false);
           showSnackbar("Password Reset");
           history.push("/login");
@@ -51,7 +51,7 @@ const ResetPasswordForm = (props) => {
       <div style={{ display: "flex", flexDirection: "column" }}>
         <label htmlFor="password">New Password</label>
         <input
-          name="newPassword"
+          name="new_pass"
           type="password"
           value={newpass}
           onChange={(e) => setNewpass(e.target.value)}
