@@ -11,6 +11,7 @@ const LandingRoutes = () => {
       <Switch>
         <Route path="/login" component={LoginPage} />
         <Route path="/forgot-password" component={ForgotPasswordPage} />
+        <Route path="/reset-password/:token" component={ForgotPasswordPage} />
         <Route exact path="/register" component={RegisterPage} />
         <Route exact path="/register/onboard" component={Onboard} />
         <Route exact path="/" component={LandingPage} />

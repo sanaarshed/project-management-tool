@@ -1,15 +1,13 @@
 import React, { useContext, useState } from "react";
+import { useLocation } from "react-router-dom";
+
 import { useForm } from "react-hook-form";
-import AuthContext from "../../context/AuthContext";
 import "../../css/LoginPage.css";
 import apiServer from "../../config/apiServer";
-import { Link } from "@material-ui/core";
 import { useSnackbar } from "../SnackbarContext";
 const ForgotPasswordForm = () => {
   const { register, handleSubmit, errors } = useForm();
 
-  const [errorMessage, setErrorMessage] = useState("");
-  const { setAuth, setEmail, setUserId, setUser } = useContext(AuthContext);
   const [formEmail, setFormEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const { showSnackbar } = useSnackbar();
@@ -20,12 +18,13 @@ const ForgotPasswordForm = () => {
       const res = await apiServer.post("/forgetPassword", {
         userEmail: email,
       });
-      console.log("res--->", res);
-      setErrorMessage("");
+      if (res.status === 200) {
+        res.data.userToken;
+        setLoading(false);
+      }
     } catch (err) {
       setLoading(false);
       if (err.response.status === 404) showSnackbar("User not registered!");
-      // setErrorMessage("The provided credentials were invalid");
     }
   };
 
@@ -52,9 +51,6 @@ const ForgotPasswordForm = () => {
       </div>
 
       <button type="submit">{loading ? "loading..." : "Continue"}</button>
-      {errorMessage ? (
-        <p style={{ color: "red", margin: "1px" }}>{errorMessage}</p>
-      ) : null}
     </form>
   );
 };
