@@ -5,6 +5,7 @@ import "../../css/LoginPage.css";
 import LoginForm from "../Forms/LoginForm";
 import { MdKeyboardBackspace } from "react-icons/md";
 import ForgotPasswordForm from "../Forms/ForgotPasswordForm";
+import ResetPasswordForm from "../Forms/ResetPasswordForm";
 const ResetPasswordPage = () => {
   return (
     <div className="login-page-container">
@@ -25,7 +26,7 @@ const ResetPasswordPage = () => {
           </div>
         </a>
       </div>
-      <ForgotPasswordForm />
+      <ResetPasswordForm />
 
       <div className="register-container">
         Not a user?{" "}

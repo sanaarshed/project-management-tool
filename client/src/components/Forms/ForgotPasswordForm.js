@@ -1,5 +1,4 @@
-import React, { useContext, useState } from "react";
-import { useLocation } from "react-router-dom";
+import React, { useState } from "react";
 
 import { useForm } from "react-hook-form";
 import "../../css/LoginPage.css";
@@ -19,8 +18,9 @@ const ForgotPasswordForm = () => {
         userEmail: email,
       });
       if (res.status === 200) {
-        res.data.userToken;
         setLoading(false);
+        showSnackbar("Please check your email to set new password!");
+        setFormEmail("");
       }
     } catch (err) {
       setLoading(false);

@@ -5,13 +5,14 @@ import LandingPage from "./LandingPage";
 import RegisterPage from "./RegisterPage";
 import Onboard from "./Onboard";
 import ForgotPasswordPage from "./ForgotPassword";
+import ResetPasswordPage from "./ResetPassword";
 const LandingRoutes = () => {
   return (
     <BrowserRouter>
       <Switch>
         <Route path="/login" component={LoginPage} />
         <Route path="/forgot-password" component={ForgotPasswordPage} />
-        <Route path="/reset-password/:token" component={ForgotPasswordPage} />
+        <Route path="/reset-password/:token" component={ResetPasswordPage} />
         <Route exact path="/register" component={RegisterPage} />
         <Route exact path="/register/onboard" component={Onboard} />
         <Route exact path="/" component={LandingPage} />

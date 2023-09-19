@@ -1,35 +1,49 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import { useForm } from "react-hook-form";
 import AuthContext from "../../context/AuthContext";
 import "../../css/LoginPage.css";
 import apiServer from "../../config/apiServer";
 import { useSnackbar } from "../SnackbarContext";
-const ResetPasswordForm = () => {
-  const { register, handleSubmit, errors } = useForm();
+import { useHistory } from "react-router-dom";
 
+const ResetPasswordForm = (props) => {
+  const { register, handleSubmit, errors } = useForm();
   const [errorMessage, setErrorMessage] = useState("");
   const { setAuth, setEmail, setUserId, setUser } = useContext(AuthContext);
   const [newpass, setNewpass] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
   const [loading, setLoading] = useState(false);
+  const [token, setToken] = useState(false);
   const { showSnackbar } = useSnackbar();
+  const currentURL = window.location.href;
+  const history = useHistory();
 
-  const onSubmit = async ({ email }) => {
-    setLoading(true);
-    try {
-      // const res = await apiServer.post("/forgetPassword", {
-      //   userEmail: email,
-      // });
-      // if (res.status === 200) {
-      //   res.data.userToken;
-      //   setLoading(false);
-      // }
-    } catch (err) {
-      // setLoading(false);
-      // if (err.response.status === 404) showSnackbar("User not registered!");
-      // setErrorMessage("The provided credentials were invalid");
+  useEffect(() => {
+    if (currentURL) {
+      const t = currentURL.split("/").pop();
+      setToken(t);
     }
+  }, [currentURL]);
+
+  const onSubmit = async ({ newPassword, confirmPassword }) => {
+    if (newPassword === confirmPassword) {
+      setLoading(true);
+      try {
+        const res = await apiServer.post(`/reset-password/${token}`, {
+          newPassword: newPassword,
+        });
+        if (res.status === 200) {
+          setLoading(false);
+          showSnackbar("Password Reset");
+          history.push("/login");
+        }
+      } catch (err) {
+        setLoading(false);
+        // if (err.response.status === 404) showSnackbar("User not registered!");
+        // setErrorMessage("The provided credentials were invalid");
+      }
+    } else showSnackbar("Make sure both password match.");
   };
 
   return (
@@ -40,7 +54,7 @@ const ResetPasswordForm = () => {
           name="newPassword"
           type="password"
           value={newpass}
-          onChange={setNewpass(e.target.value)}
+          onChange={(e) => setNewpass(e.target.value)}
           ref={register({ required: true })}
         ></input>
         {errors.email?.type === "required" && (
