@@ -42,7 +42,7 @@ router.delete(
 router.get(
   "/",
   asyncHandler(async (req, res, next) => {
-    console.log('get all userteams--->',)
+    console.log("get all userteams--->");
     const userteams = await UserTeam.findAll({});
     res.json(userteams);
   })
@@ -51,9 +51,11 @@ router.get(
 router.get(
   "/:id",
   asyncHandler(async (req, res, next) => {
-    const userteams = await UserTeam.findAll({      where: {
-      team_id: req.params.id,
-    }});
+    const userteams = await UserTeam.findAll({
+      where: {
+        team_id: req.params.id,
+      },
+    });
     res.json(userteams);
   })
 );

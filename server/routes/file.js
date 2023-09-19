@@ -7,7 +7,6 @@ const fileUpload = require("express-fileupload"); // Import express-fileupload m
 const path = require("path");
 const fs = require("fs");
 
-
 const router = express.Router();
 
 // Enable file uploads with express-fileupload middleware
@@ -51,7 +50,9 @@ router.post(
         path: `http://localhost:8080/file/${uploadedFile.name}`,
       });
       if (!file) {
-        return res.status(400).json({ message: "Failed to create a file record." });
+        return res
+          .status(400)
+          .json({ message: "Failed to create a file record." });
       }
 
       res.json({ message: "File uploaded successfully.", file });
@@ -59,38 +60,38 @@ router.post(
   })
 );
 
+router.get(
+  "/download/:id",
+  asyncHandler(async (req, res, next) => {
+    const file_id = req.params.id;
+    const file = await File.findOne({
+      where: {
+        id: file_id,
+      },
+    });
+    if (!file) {
+      return res.status(404).json({ message: "File not found." });
+    }
 
-router.get("/download/:id", asyncHandler(async (req, res, next) => {
-  const file_id = req.params.id;
-  const file = await File.findOne({
-    where: {
-      id: file_id,
-    },
-  });
+    // Get the file path
+    const filePath = `uploads/${file.name}`;
 
-  if (!file) {
-    return res.status(404).json({ message: "File not found." });
-  }
+    // Check if the file exists
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ message: "File not found on the server." });
+    }
 
-  // Get the file path
-  const filePath = file.path;
+    // Set appropriate headers for the response
+    res.setHeader("Content-Disposition", `attachment; filename=${file.name}`);
+    res.setHeader("Content-Type", "application/octet-stream");
 
-  // Check if the file exists
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).json({ message: "File not found on the server." });
-  }
+    // Create a readable stream from the file and pipe it to the response
+    const fileStream = fs.createReadStream(filePath);
+    fileStream.pipe(res);
+  })
+);
 
-  // Set appropriate headers for the response
-  res.setHeader("Content-Disposition", `attachment; filename=${file.name}`);
-  res.setHeader("Content-Type", "application/octet-stream");
-
-  // Create a readable stream from the file and pipe it to the response
-  const fileStream = fs.createReadStream(filePath);
-  fileStream.pipe(res);
-}));
-
-
-router.get("/:fileName",async (req, res) => {
+router.get("/:fileName", async (req, res) => {
   try {
     const file_id = req.params.fileName;
     const file = await File.findOne({
@@ -113,7 +114,11 @@ router.get("/:fileName",async (req, res) => {
     // Determine the content type based on the file extension
     const fileExtension = path.extname(filePath);
 
-    if (fileExtension === ".jpg" || fileExtension === ".jpeg" || fileExtension === ".jfif") {
+    if (
+      fileExtension === ".jpg" ||
+      fileExtension === ".jpeg" ||
+      fileExtension === ".jfif"
+    ) {
       contentType = "image/jpeg";
     } else if (fileExtension === ".png") {
       contentType = "image/png";
@@ -124,7 +129,7 @@ router.get("/:fileName",async (req, res) => {
     // Set appropriate headers for the response
     res.setHeader("Content-Type", contentType);
     res.setHeader("Content-Disposition", `inline; filename=${file.name}`);
-    
+
     // Send the file to the client
     res.sendFile(filePath);
   } catch (err) {
@@ -132,7 +137,5 @@ router.get("/:fileName",async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 });
-
-
 
 module.exports = router;

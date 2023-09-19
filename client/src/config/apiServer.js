@@ -4,7 +4,9 @@ import { backendUrl } from "./index";
 const instance = axios.create({
   // baseURL: backendUrl,
   // baseURL: "https://methodic-backend.herokuapp.com/",
-  baseURL: "http://localhost:8080",
+  // baseURL: "http://localhost:8080",
+
+  baseURL: process.env.REACT_APP_BASE_URL,
 });
 
 instance.interceptors.request.use(
