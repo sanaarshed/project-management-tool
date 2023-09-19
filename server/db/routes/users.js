@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const { asyncHandler } = require("./utilities/utils");
 const { check, validationResult } = require("express-validator");
 const { User, Team, UserTeam, Invitations } = require("../../db/models");
-const { getUserToken, requireAuth } = require("./utilities/auth");
+const { getUserToken, requireAuth, tokenVerify } = require("./utilities/auth");
 
 const router = express.Router();
 
@@ -220,4 +220,80 @@ router.post(
   })
 );
 
+
+router.post(
+  "/forgetPassword",
+  asyncHandler(async (req, res, next) => {
+    console.log(req)
+    const { userEmail } = req.body;
+    if(!userEmail){return res.status(400).json({ message: "Required fields are missing" });}
+    const existingUser = await User.findOne({
+      where: {
+        email: userEmail,
+      },
+    });
+    if (!existingUser) {
+      res.status(404).send({ Error: "User not Found!" });
+      return;
+    }
+    const userToken = getUserToken(existingUser);
+    if(userToken){
+      await User.update(
+        {
+          token:userToken
+        },
+        {
+          where: {
+            email: userEmail
+          }
+        }
+      );
+    }
+
+    res.status(200).json({
+      userToken
+    });
+  }));
+
+
+router.post(
+  "/resetPassword/:userToken",
+  asyncHandler(async (req, res) => {
+    try {
+    const { newPassword } = req.body;
+    const { userToken } = req.params;
+    const existingUser = await User.findOne({
+      where: {
+        token: userToken,
+      },
+    });
+    if (!existingUser) {
+      res.status(404).send({ Error: "User not Found!" });
+      return;
+    }
+
+    const token =await tokenVerify(existingUser.token);
+    console.log("tokrn",token)
+    if(!token){res.status(404).send({ Error: "Token not valid!" });
+    return;}
+    await User.update(
+      {
+        
+        hashed_password:await bcrypt.hash(newPassword, 10),
+        token:null
+      },
+      {
+        where: {
+          token: userToken,
+        },
+      }
+    );
+
+
+    res.status(200).json({ message: "Password changed successfully" });
+    } catch (err) {
+      res.status(422).send({ error: err });
+    }
+  })
+);
 module.exports = router;
