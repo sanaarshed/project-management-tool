@@ -17,7 +17,7 @@ const getUserToken = (user) => {
 
   // const token = jwt.sign({ data: userDataForToken }, secret);
   // const token = jwt.sign({ data: userDataForToken }, process.env.JWT_SECRET);
-  console.log("process.env.JWT_SECRET--->", process.env.JWT_SECRET);
+  // console.log("process.env.JWT_SECRET--->", process.env.JWT_SECRET);
   const token = jwt.sign({ data: userDataForToken }, process.env.JWT_SECRET, {
     expiresIn: exp_timestamp,
   });
@@ -26,6 +26,7 @@ const getUserToken = (user) => {
 };
 
 const restoreUser = (req, res, next) => {
+
   const { token } = req;
 
   if (!token) {
@@ -57,5 +58,21 @@ const restoreUser = (req, res, next) => {
   );
 };
 
+const tokenVerify = (token) => {
+
+  return jwt.verify(
+    token,
+    process.env.JWT_SECRET,
+    null,
+    async (err, jwtPayload) => {
+      if (err) {
+        err.status = 401;
+        return err;
+      }
+      return jwtPayload.data
+    }
+  );
+};
+
 const requireAuth = [bearerToken(), restoreUser];
-module.exports = { getUserToken, requireAuth };
+module.exports = { getUserToken, requireAuth, tokenVerify};
