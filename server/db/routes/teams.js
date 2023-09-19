@@ -2,9 +2,9 @@ const express = require("express");
 const { asyncHandler } = require("./utilities/utils");
 const { requireAuth } = require("./utilities/auth");
 const { check, validationResult } = require("express-validator");
-const { Team, UserTeam, User, Project, UserProject } = require("../../db/models");
+const { Team, UserTeam, Project, UserProject } = require("../../db/models");
 const jwt = require("jsonwebtoken");
-const { Invitations } = require("../models");
+const { Invitations, User } = require("../models");
 
 
 const router = express.Router();
@@ -230,67 +230,37 @@ router.delete(
   })
 );
 
-
 router.post(
   "/invite",
   asyncHandler(async (req, res, next) => {
     try {
-      const invite_email = req.body.email;
-      const invite_team = req.body.teamId;
-      const findUsers = await Invitations.findOne({
-        where: {
-          email: invite_email
-        },
-      });
+      const { email, teamId, invitedBy } = req.body;
 
-      if (findUsers!==null) {
-        return res.status(409).json({ message: "This user already received an invitation" });
+      if (!email || !teamId || !invitedBy) {
+        return res.status(400).json({ message: "Required fields are missing" });
       }
 
-      const inviteToken =await jwt.sign({ data: { email: invite_email, teamId: invite_team } }, "gggg2222", {
-        expiresIn: '48h',
-      });
+      const [userExistInvitation, user, team] = await Promise.all([
+        Invitations.findOne({ where: { email } }),
+        User.findOne({ where: { id: invitedBy } }),
+        Team.findOne({ where: { id: teamId } }),
+      ]);
 
-      const invited = await Invitations.create({
-        email: invite_email,
-        team_id: invite_team,
-        token: inviteToken,
-      });
+      if (userExistInvitation || !user || !team) {
+        let errorMessage = "";
+        if (userExistInvitation) {
+          errorMessage = "This user already received an invitation";
+        } else if (!user) {
+          errorMessage = "Invited User Not Found in User List";
+        } else if (!team) {
+          errorMessage = "Team Not Exist";
+        }
+        return res.status(409).json({ message: errorMessage });
+      }
+
+      const invited = await Invitations.create({ email, team_id: teamId, invited_by: invitedBy });
 
       res.json(invited);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  })
-);
-
-
-router.post(
-  "/invite/accept",
-  asyncHandler(async (req, res, next) => {
-    try {
-
-      const findUsers = await Invitations.findOne({
-        where: {
-          token: req.body.token
-        },
-      });
-
-      if (findUsers===null) {
-        return res.status(409).json({ message: "This invitation not found!" });
-      }
-
-      const inviteToken =await jwt.verify(findUsers.token, "gggg2222");
-      if(inviteToken){
-        const team = await UserTeam.create({
-          user_id:req.body.userId,
-          team_id:inviteToken.data.teamId
-        });
-        return res.status(201).json({ message: "User added into Team" });
-      }
-      return res.status(409).json({ message: "This invitation not found!" });
-
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal server error" });

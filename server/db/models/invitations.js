@@ -8,6 +8,9 @@ module.exports = (sequelize, DataTypes) => {
       Invitations.belongsTo(models.Team, {
         foreignKey: "team_id",
       });
+      Invitations.belongsTo(models.User, {
+        foreignKey: "invited_by",
+      });
     }
   }
   Invitations.init(
@@ -21,14 +24,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false
       },
-      active: {
+      invited_by: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
+      is_active: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
-      },
-      token: {
-        type: DataTypes.STRING,
-        allowNull: false,
       }
     },
     {

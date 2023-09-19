@@ -13,11 +13,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      token: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      active: {
+      is_active: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: false
@@ -27,10 +23,13 @@ module.exports = {
         allowNull: false,
         references: {
           model: "Teams",
-          key: "id",
-        },
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE",
+          key: "id"
+        }
+      },
+      invited_by: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: { model: "Users", key: "id" }
       },
       // Add more columns as needed (e.g., file_path, file_size, file_type, etc.)
       createdAt: {
