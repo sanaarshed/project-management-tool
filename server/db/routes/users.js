@@ -4,6 +4,8 @@ const { asyncHandler } = require("./utilities/utils");
 const { check, validationResult } = require("express-validator");
 const { User, Team, UserTeam, Invitations } = require("../../db/models");
 const { getUserToken, requireAuth, tokenVerify } = require("./utilities/auth");
+const { sendEmail } = require("./utilities/email");
+
 
 const router = express.Router();
 
@@ -224,7 +226,6 @@ router.post(
 router.post(
   "/forgetPassword",
   asyncHandler(async (req, res, next) => {
-    console.log(req)
     const { userEmail } = req.body;
     if(!userEmail){return res.status(400).json({ message: "Required fields are missing" });}
     const existingUser = await User.findOne({
@@ -248,6 +249,15 @@ router.post(
           }
         }
       );
+      const email = sendEmail({
+        "to": userEmail,
+        "subject": "ForgetPassword",
+        "templateName": "forgetPassword", // Name of the EJS template file without the ".ejs" extension
+        "templateData": {
+          "token": userToken
+        }
+      })
+      console.log(email)
     }
 
     res.status(200).json({
