@@ -2,7 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const { asyncHandler } = require("./utilities/utils");
 const { check, validationResult } = require("express-validator");
-const { User, Team, UserTeam } = require("../../db/models");
+const { User, Team, UserTeam, Invitations } = require("../../db/models");
 const { getUserToken, requireAuth } = require("./utilities/auth");
 
 const router = express.Router();
@@ -34,7 +34,7 @@ const validateEmailPassword = [
 //Get user Information
 router.get(
   "/user/:id",
-  requireAuth,
+  // requireAuth,
   asyncHandler(async (req, res, next) => {
     const user_id = req.params.id;
     const user = await User.findOne({
@@ -50,7 +50,7 @@ router.get(
 
 router.get(
   "/users",
-  requireAuth,
+  // requireAuth,
   asyncHandler(async (req, res, next) => {
     const users = await User.findAll({
       attributes: ["id", "name", "email"],
@@ -94,7 +94,33 @@ router.post(
       updatedAt: new Date(),
     });
 
+
     const token = getUserToken(user);
+
+    const existingInvitationUser = await Invitations.findOne({
+      where: {
+        email: user.email,
+        is_active: false
+      }
+    });
+    if(existingInvitationUser){
+      const userteam = await UserTeam.create({
+        team_id: existingInvitationUser.team_id,
+        user_id: user.id,
+      });
+      if(userteam){
+        await Invitations.update(
+          {
+            is_active: true,
+          },
+          {
+            where: {
+              id: existingInvitationUser.id,
+            },
+          }
+        );
+      }
+    }
 
     res.status(200).json({
       id: user.id,

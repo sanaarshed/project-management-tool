@@ -7,7 +7,7 @@ import TaskStore from "./context/store/TaskStore";
 import ProjectStore from "./context/store/ProjectStore";
 import TasklistStore from "./context/store/TasklistStore";
 import "./css/Home.css";
-
+import { SnackbarProvider } from "./components/SnackbarContext";
 const App = () => {
   const [auth, setAuth] = useState(localStorage.getItem("token") || "");
   const [userId, setUserId] = useState(localStorage.getItem("userId") || null);
@@ -43,13 +43,15 @@ const App = () => {
     <AuthContext.Provider value={context}>
       <UserStore>
         <ProjectStore>
-          <TeamStore>
-            <TasklistStore>
-              <TaskStore>
-                <Routes />
-              </TaskStore>
-            </TasklistStore>
-          </TeamStore>
+          <SnackbarProvider>
+            <TeamStore>
+              <TasklistStore>
+                <TaskStore>
+                  <Routes />
+                </TaskStore>
+              </TasklistStore>
+            </TeamStore>
+          </SnackbarProvider>
         </ProjectStore>
       </UserStore>
     </AuthContext.Provider>

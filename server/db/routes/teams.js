@@ -2,7 +2,10 @@ const express = require("express");
 const { asyncHandler } = require("./utilities/utils");
 const { requireAuth } = require("./utilities/auth");
 const { check, validationResult } = require("express-validator");
-const { Team, UserTeam, User, Project, UserProject } = require("../../db/models");
+const { Team, UserTeam, Project, UserProject } = require("../../db/models");
+const jwt = require("jsonwebtoken");
+const { Invitations, User } = require("../models");
+
 
 const router = express.Router();
 //Authenticates user before being able to use API
@@ -226,5 +229,44 @@ router.delete(
     res.status(202);
   })
 );
+
+router.post(
+  "/invite",
+  asyncHandler(async (req, res, next) => {
+    try {
+      const { email, teamId, invitedBy } = req.body;
+
+      if (!email || !teamId || !invitedBy) {
+        return res.status(400).json({ message: "Required fields are missing" });
+      }
+
+      const [userExistInvitation, user, team] = await Promise.all([
+        Invitations.findOne({ where: { email } }),
+        User.findOne({ where: { id: invitedBy } }),
+        Team.findOne({ where: { id: teamId } }),
+      ]);
+
+      if (userExistInvitation || !user || !team) {
+        let errorMessage = "";
+        if (userExistInvitation) {
+          errorMessage = "This user already received an invitation";
+        } else if (!user) {
+          errorMessage = "Invited User Not Found in User List";
+        } else if (!team) {
+          errorMessage = "Team Not Exist";
+        }
+        return res.status(409).json({ message: errorMessage });
+      }
+
+      const invited = await Invitations.create({ email, team_id: teamId, invited_by: invitedBy });
+
+      res.json(invited);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  })
+);
+
 
 module.exports = router;

@@ -5,6 +5,7 @@ import { Modal, TextField } from "@material-ui/core";
 import { useForm } from "react-hook-form";
 import apiServer from "../../config/apiServer";
 import Loader from "../Loader";
+import { useSnackbar } from "../SnackbarContext";
 
 const AddMemberForm = ({ teamId, clickClose, open, setTeamUsers }) => {
   const { register, handleSubmit, errors } = useForm();
@@ -12,6 +13,7 @@ const AddMemberForm = ({ teamId, clickClose, open, setTeamUsers }) => {
   const [error, setError] = useState();
   const [loading, setLoading] = useState(true);
   const [inviteEmail, setinviteEmail] = useState("");
+  const { showSnackbar } = useSnackbar();
 
   const onSubmit = async ({ userId }) => {
     try {
@@ -28,7 +30,29 @@ const AddMemberForm = ({ teamId, clickClose, open, setTeamUsers }) => {
   };
 
   const handleSendEmailInvite = async () => {
-    console.log("handleSendEmailInvite--->");
+    try {
+      console.log("handleSendEmailInvite--->");
+      const id = localStorage.getItem("userId");
+      const payload = {
+        email: inviteEmail,
+        teamId: teamId,
+        invitedBy: id,
+      };
+      await apiServer.post(`team/invite`, payload).then((res) => {
+        if (res.status === 200) {
+          showSnackbar("Invitation Sent", "success");
+          clickClose();
+        }
+      });
+    } catch (error) {
+      if (error.response && error.response.status === 409) {
+        // Handle the 409 conflict error here
+        showSnackbar(error.response.data.message);
+      } else {
+        // Handle other errors
+        console.error("Error:", error.message);
+      }
+    }
   };
 
   const getAllUsers = async () => {

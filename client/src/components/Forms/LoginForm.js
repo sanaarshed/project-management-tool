@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import AuthContext from "../../context/AuthContext";
 import "../../css/LoginPage.css";
 import apiServer from "../../config/apiServer";
+import { Link } from "@material-ui/core";
 const LoginForm = () => {
   const { register, handleSubmit, errors } = useForm();
 
@@ -99,6 +100,7 @@ const LoginForm = () => {
           <p style={{ color: "red", margin: "1px" }}>Please enter a password</p>
         )}
       </div>
+      <Link href="/forgot-password">Forgot password?</Link>
       <button type="submit">{loading ? "Logging in.." : "Login"}</button>
       {errorMessage ? (
         <p style={{ color: "red", margin: "1px" }}>{errorMessage}</p>
