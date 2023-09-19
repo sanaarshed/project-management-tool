@@ -2,8 +2,8 @@ const express = require("express");
 const { asyncHandler } = require("./utilities/utils");
 const { requireAuth } = require("./utilities/auth");
 const { check, validationResult } = require("express-validator");
-const { Task, Comment, Project, User, File } = require("../models");
-const comment = require("../../db/models/comment");
+const { Task, Comment, Project, User, File } = require("../db/models");
+
 
 const router = express.Router();
 //Authenticates user before being able to use API

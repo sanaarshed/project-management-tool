@@ -2,10 +2,22 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const { asyncHandler } = require("./utilities/utils");
 const { check, validationResult } = require("express-validator");
+<<<<<<< Updated upstream:server/db/routes/users.js
 const { User, Team, UserTeam, Invitations } = require("../../db/models");
 const { getUserToken, requireAuth, tokenVerify } = require("./utilities/auth");
 const { sendEmail } = require("./utilities/email");
 
+=======
+<<<<<<< Updated upstream:server/db/routes/users.js
+const { User, Team, UserTeam } = require("../../db/models");
+const { getUserToken, requireAuth } = require("./utilities/auth");
+=======
+const { User, Team, UserTeam, Invitations } = require("../db/models");
+const { getUserToken, requireAuth, tokenVerify } = require("./utilities/auth");
+const { sendEmail } = require("./utilities/email");
+
+>>>>>>> Stashed changes:server/routes/users.js
+>>>>>>> Stashed changes:server/routes/users.js
 
 const router = express.Router();
 
