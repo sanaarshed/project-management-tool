@@ -125,7 +125,7 @@ router.post(
       }
     }
 
-    res.status(200).json({
+    res.status(responses.ok.statusCode).json({
       id: user.id,
       token,
       email: user.email,
@@ -279,7 +279,7 @@ router.post(
       })
     }
 
-    res.status(200).json({
+    res.status(responses.ok.statusCode).json({
       userToken
     });
   }));

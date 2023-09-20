@@ -10,6 +10,7 @@ const {
   UserProject,
   Task,
 } = require("../db/models");
+const response = require("./utilities/response");
 
 const router = express.Router();
 //Authenticates user before being able to use API
@@ -171,7 +172,7 @@ router.delete(
     const project = await Project.delete({
       where: { id: project_id },
     });
-    res.status(202);
+    res.status(response.ok.statusCode);
   })
 );
 

@@ -7,6 +7,7 @@ const { Team, UserTeam, Project, UserProject } = require("../db/models");
 const jwt = require("jsonwebtoken");
 const { Invitations, User } = require("../db/models");
 const { sendEmail } = require("./utilities/email");
+const response = require("./utilities/response");
 
 
 
@@ -107,7 +108,7 @@ router.get(
       where: { id: team_id },
     });
     if (!team) {
-      res.send({ error: "No team exists" });
+      res.status(response.noTeamExists.statusCode).send({ error: response.noTeamExists.message });
     }
     res.json(team);
   })
@@ -117,37 +118,29 @@ router.get(
 router.post(
   "/user/:userId",
   asyncHandler(async (req, res, next) => {
-    console.log('--->',req)
     const user_id = req.params.userId;
     const { description, name } = req.body;
-    console.log('--->',description, name)
-
     if (description) {
-      console.log('--->')
       const team = await Team.create({
         description: description,
         name: name,
       });
-      console.log('team--->',team)
-
       //Adds user to team
-      const userteam = await UserTeam.create({
+      await UserTeam.create({
         team_id: team.id,
         user_id: user_id,
       });
-      
-      console.log('userteam--->',userteam)
-      res.json(team).status(201);
+      res.json(team).status(response.created.statusCode);
     } else if (!description) {
       const team = await Team.create({
         name: name,
       });
       //Adds user to team
-      const userteam = await UserTeam.create({
+      await UserTeam.create({
         team_id: team.id,
         user_id: user_id,
       });
-      res.json(team).status(201);
+      res.json(team).status(response.created.statusCode);
     }
   })
 );
@@ -165,7 +158,7 @@ router.post(
       },
     });
     if (userteam) {
-      res.status(404).send({ error: "user already exists" });
+      res.status(response.userAlreadyExists.statusCode).send({ error: response.userAlreadyExists.message });
     } else if (!userteam) {
       const newUserTeam = await UserTeam.create({
         team_id: team_id,
@@ -180,7 +173,6 @@ router.post(
 router.put(
   "/:teamId/description",
   asyncHandler(async (req, res, next) => {
-    console.log('Edit team description--->',)
     const team_id = req.params.teamId;
     const { description } = req.body;
     await Team.update(
@@ -213,9 +205,9 @@ router.post(
         user_id: userId,
         project_id: project.id,
       });
-      res.json(userproject).status(201);
+      res.json(userproject).status(response.created.statusCode);
     } else {
-      res.status(404);
+      res.status(response.notFound.statusCode);
     }
   })
 );
@@ -229,7 +221,7 @@ router.delete(
     const team = await Team.destroy({
       where: { id: team_id },
     });
-    res.status(202);
+    res.status(response.ok.statusCode);
   })
 );
 
@@ -240,7 +232,7 @@ router.post(
       const { email, teamId, invitedBy } = req.body;
 
       if (!email || !teamId || !invitedBy) {
-        return res.status(400).json({ message: "Required fields are missing" });
+        return res.status(response.fieldsMissing.statusCode).json({ message: response.fieldsMissing.message });
       }
 
       const [userExistInvitation, user, team] = await Promise.all([
@@ -264,12 +256,13 @@ router.post(
       }
 
       const invited = await Invitations.create({ email, team_id: teamId, invited_by: invitedBy });
+      console.log(team.Projects)
       sendEmail({
         "to": email,
         "subject": "Invite for join WorkPlace",
         "templateName": "inviteUserWorkplace", // Name of the EJS template file without the ".ejs" extension
         "templateData": {
-          "workplaceName": team.Projects[0].name,
+          "workplaceName": team.Projects===[]?team.Projects[0].name:null,
           "inviterName": user.name
         }
       })
@@ -278,7 +271,7 @@ router.post(
       res.json(invited);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(response.internalServerError.statusCode).json({ message: response.internalServerError.message });
     }
   })
 );

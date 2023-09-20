@@ -14,9 +14,24 @@ module.exports = {
       statusCode: 204,
       message: 'No Content',
     },
+    userRemovedFromTeam: {
+      statusCode: 200,
+      message: 'User removed from Team',
+    },
+    noTeamExists: {
+      statusCode: 404,
+      message: 'No team exists',
+    },
     passwordChangedSuccessfully: {
       statusCode: 200,
       message: 'Password changed successfully',
+    },
+    fileNotUpload: {
+      statusCode: 400,
+      message: 'file Not upload!',
+    },
+    fileUploaded:{
+      message: "File uploaded successfully."
     },
   
     // Client error responses
@@ -55,6 +70,10 @@ module.exports = {
     missingEmailAndPassword: {
       statusCode: 422,
       message: 'Must provide email and password',
+    },
+    fieldsMissing: {
+      statusCode: 400,
+      message: 'Required fields are missing',
     },
   
     // Server error responses

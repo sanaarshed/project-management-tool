@@ -3,6 +3,7 @@ const { asyncHandler } = require("./utilities/utils");
 const { requireAuth } = require("./utilities/auth");
 const { check, validationResult } = require("express-validator");
 const { Task, Comment, Project, User, File } = require("../db/models");
+const response = require("./utilities/response");
 
 
 const router = express.Router();
@@ -49,7 +50,7 @@ router.post(
     if (!comment) {
       res.status(404);
     } else {
-      res.json(comment).status(201);
+      res.json(comment).status(response.created.statusCode);
     }
   })
 );
@@ -91,7 +92,7 @@ router.put(
       );
       res.json(updateTask);
     } catch (err) {
-      res.status(401).send({ error: "Something went wrong" });
+      res.status(response.internalServerError.statusCode).send({ error: response.internalServerError.message });
     }
   })
 );
@@ -147,7 +148,7 @@ router.put(
       const task = await Task.findOne({ where: { id: task_id } });
       res.json(task);
     } catch (err) {
-      res.status(401).send({ error: "Something went wrong" });
+      res.status(response.internalServerError.statusCode).send({ error: response.internalServerError.message });
     }
   })
 );
@@ -172,7 +173,7 @@ router.put(
       const task = await Task.findOne({ where: { id: task_id } });
       res.json(task);
     } catch (err) {
-      res.send({ error: "Something went wrong" });
+      res.status(response.internalServerError.statusCode).send({ error: response.internalServerError.message });
     }
   })
 );
@@ -205,7 +206,7 @@ router.put(
       });
       res.json(task);
     } catch (err) {
-      res.send({ error: "Something went wrong" });
+      res.status(response.internalServerError.statusCode).send({ error: response.internalServerError.message });
     }
   })
 );
@@ -230,7 +231,7 @@ router.put(
       const task = await Task.findOne({ where: { id: task_id } });
       res.json(task);
     } catch (err) {
-      res.send({ error: "Something went wrong" });
+      res.status(response.internalServerError.statusCode).send({ error: response.internalServerError.message });
     }
   })
 );
@@ -255,7 +256,7 @@ router.put(
       const task = await Task.findOne({ where: { id: task_id } });
       res.json(task);
     } catch (err) {
-      res.send({ error: "Something went wrong" });
+      res.status(response.internalServerError.statusCode).send({ error: response.internalServerError.message });
     }
   })
 );
@@ -301,7 +302,7 @@ router.put(
       });
       res.json(task);
     } catch (err) {
-      res.send({ error: "Something went wrong" });
+      res.status(response.internalServerError.statusCode).send({ error: response.internalServerError.message });
     }
   })
 );
@@ -326,7 +327,7 @@ router.put(
       const task = await Task.findOne({ where: { id: task_id } });
       res.json(task);
     } catch (err) {
-      res.status(401).send({ error: "Something went wrong" });
+      res.status(response.internalServerError.statusCode).send({ error: response.internalServerError.message });
     }
   })
 );
@@ -340,7 +341,7 @@ router.delete(
     await Task.destroy({
       where: { id: task_id },
     });
-    res.json(202);
+    res.json(response.ok.statusCode);
   })
 );
 

@@ -3,6 +3,8 @@ const { asyncHandler } = require("./utilities/utils");
 const { requireAuth } = require("./utilities/auth");
 const { check, validationResult } = require("express-validator");
 const { UserTeam, Team, User } = require("../db/models");
+const responses = require("./utilities/response");
+
 
 const router = express.Router();
 
@@ -34,7 +36,7 @@ router.delete(
         },
       });
     }
-    res.send({ message: "User removed from Team" });
+    res.status(responses.userRemovedFromTeam.statusCode).send({ error: responses.userRemovedFromTeam.message });
   })
 );
 
@@ -42,7 +44,6 @@ router.delete(
 router.get(
   "/",
   asyncHandler(async (req, res, next) => {
-    console.log("get all userteams--->");
     const userteams = await UserTeam.findAll({});
     res.json(userteams);
   })
