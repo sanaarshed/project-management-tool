@@ -44,7 +44,7 @@ const PopOutTaskDetailsHome = ({ showSideTaskDetails, sideTaskDetails }) => {
     const userList = res.data.Users.filter((user) => {
       return user.id !== task.User.id;
     });
-    console.log(userList, "userList");
+    console.log("getProjectUserss", userList);
     setProjectUsers(userList);
     updateProject();
   };
@@ -52,7 +52,7 @@ const PopOutTaskDetailsHome = ({ showSideTaskDetails, sideTaskDetails }) => {
   const updateProject = async (e) => {
     var projectId = document.getElementById("project-select").value;
     const userId = localStorage.getItem("userId");
-    console.log(projectId);
+    console.log("projectIdd", projectId);
     await apiServer.put(`/task/${task.id}/project/${projectId}`);
     const res = await apiServer.get(`/task/user/${userId}`);
     await taskdispatch({ type: "get_user_tasks", payload: res.data });
@@ -73,13 +73,13 @@ const PopOutTaskDetailsHome = ({ showSideTaskDetails, sideTaskDetails }) => {
   const updateDueDate = async (date) => {
     setDueDate(date);
     await apiServer.put(`/task/${task.id}/dueDate`, { date });
-    console.log(date);
+    console.log("datee", date);
   };
   const updateDescription = async (e) => {
     const description = e.target.value;
     await apiServer.put(`/task/${task.id}/description`, { description });
 
-    console.log(e.target.value);
+    console.log("updateDescriptionn", e.target.value);
   };
 
   const handleDescriptionUpdate = (e) => {

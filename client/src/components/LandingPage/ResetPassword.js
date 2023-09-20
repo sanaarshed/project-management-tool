@@ -29,9 +29,8 @@ const ResetPasswordPage = () => {
       <ResetPasswordForm />
 
       <div className="register-container">
-        Not a user?{" "}
-        <a style={{ textDecoration: "none", color: "blue" }} href="/register">
-          Click here to sign up
+        <a style={{ textDecoration: "none", color: "blue" }} href="/login">
+          Back to Log in
         </a>
       </div>
     </div>

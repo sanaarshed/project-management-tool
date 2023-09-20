@@ -23,7 +23,7 @@ const Onboard = (props) => {
         //for Refresh
         setAuth(res.data.token);
       } catch (err) {
-        console.log(err.status);
+        console.log("err in onboard->", err.status);
         setErrorMessage("Something went wrong");
       }
     }

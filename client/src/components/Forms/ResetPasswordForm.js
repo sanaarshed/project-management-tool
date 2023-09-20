@@ -40,8 +40,7 @@ const ResetPasswordForm = (props) => {
         }
       } catch (err) {
         setLoading(false);
-        // if (err.response.status === 404) showSnackbar("User not registered!");
-        // setErrorMessage("The provided credentials were invalid");
+        if (err.response.status === 404) showSnackbar("User not registered!");
       }
     } else showSnackbar("Make sure both password match.");
   };
