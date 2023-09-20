@@ -87,6 +87,10 @@ module.exports = (sequelize, DataTypes) => {
       image: {
         type: DataTypes.STRING,
       },
+      is_verify: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true
+      },
       token: {
         type: DataTypes.STRING,
         allowNull: true
