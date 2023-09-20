@@ -189,7 +189,7 @@ const AddTaskProjectForm = ({
             Cancel
           </Button>
           <Button style={{ color: "#0093ff" }} type="submit" color="primary">
-            Add
+            Add Task
           </Button>
         </div>
       </form>

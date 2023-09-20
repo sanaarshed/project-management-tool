@@ -19,8 +19,11 @@ const ForgotPasswordForm = () => {
       });
       if (res.status === 200) {
         setLoading(false);
-        showSnackbar("Please check your email to set new password!");
+        showSnackbar("Please check your email to set new password!", 5000);
         setFormEmail("");
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 1000);
       }
     } catch (err) {
       setLoading(false);
