@@ -83,15 +83,15 @@ const TaskForm = ({
   }) => {
     console.log("  tasklistId,--->", tasklistId);
 
-    // if(projectTaskLists.length>0)
-    // await apiServer.post(`/tasklist/${tasklistId}/task`, {
-    //   name,
-    //   projectId,
-    //   assigneeId,
-    //   due_date,
-    //   completed,
-    //   description,
-    // });
+    if (projectTaskLists.length > 0)
+      await apiServer.post(`/tasklist/${tasklistId}/task`, {
+        name,
+        projectId,
+        assigneeId,
+        due_date,
+        completed,
+        description,
+      });
 
     // const res = await apiServer.get(
     //   `/project/user/${localStorage.getItem("userId")}`

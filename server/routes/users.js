@@ -6,6 +6,7 @@ const { User, Team, UserTeam, Invitations } = require("../db/models");
 const { getUserToken, requireAuth, tokenVerify } = require("./utilities/auth");
 const { sendEmail } = require("./utilities/email");
 const responses = require("./utilities/response");
+const { response } = require("../app");
 
 const router = express.Router();
 
@@ -64,18 +65,23 @@ router.get(
   "/userVerify/:token",
   // requireAuth,
   asyncHandler(async (req, res, next) => {
-    const userToken = req.params.token
-    if(!userToken) return res.status(responses.notFound.statusCode).send({ Error: responses.notFound.message });
+    const userToken = req.params.token;
+    if (!userToken)
+      return res
+        .status(responses.notFound.statusCode)
+        .send({ Error: responses.notFound.message });
     const token = await tokenVerify(userToken);
-      if (!token) {
-        res.status(404).send({ Error: "Token not valid!" });
-        return;
-      }
+    if (!token.email) {
+      res
+        .status(responses.tokenInvalid.statusCode)
+        .send({ Error: responses.tokenInvalid.message });
+      return;
+    }
 
     const verified = await User.update(
       {
         is_verify: true,
-        token: null
+        token: null,
       },
       {
         where: {
@@ -83,18 +89,21 @@ router.get(
         },
       }
     );
-    if(verified){
+
+    if (verified) {
       sendEmail({
-        "to": token.email,
-        "subject": "Registration Successfully",
-        "templateName": "register", // Name of the EJS template file without the ".ejs" extension
-        "templateData": null
-      })
-      return res.status(responses.ok.statusCode).send({ Error: responses.ok.message });
+        to: token.email,
+        subject: "Registration Successfully",
+        templateName: "register", // Name of the EJS template file without the ".ejs" extension
+        templateData: null,
+      });
+      return res
+        .status(responses.ok.statusCode)
+        .send({ Error: responses.ok.message });
     }
-    return res.status(responses.badRequest.statusCode).send({ Error: responses.badRequest.message });
-
-
+    return res
+      .status(responses.badRequest.statusCode)
+      .send({ Error: responses.badRequest.message });
   })
 );
 //Register
@@ -164,28 +173,28 @@ router.post(
       }
     }
 
-    if(user){
-    if (token) {
-      await User.update(
-        {
-          token: token,
-        },
-        {
-          where: {
-            email: user.email,
+    if (user) {
+      if (token) {
+        await User.update(
+          {
+            token: token,
           },
-        }
-      );
+          {
+            where: {
+              email: user.email,
+            },
+          }
+        );
 
-      await sendEmail({
-        "to": user.email,
-        "subject": "User Verification",
-        "templateName": "userVerify", // Name of the EJS template file without the ".ejs" extension
-        "templateData": {
-          token: token,
-        }
-      })
-    }
+        await sendEmail({
+          to: user.email,
+          subject: "User Verification",
+          templateName: "userVerify", // Name of the EJS template file without the ".ejs" extension
+          templateData: {
+            token: token,
+          },
+        });
+      }
     }
 
     res.status(responses.ok.statusCode).json({
@@ -219,7 +228,11 @@ router.put(
           email: email,
         },
       });
-      if(user.is_verify===false){res.status(responses.validationError.statusCode).send({message:"User not verified"});}
+      if (user.is_verify === false) {
+        res
+          .status(responses.validationError.statusCode)
+          .send({ message: "User not verified" });
+      }
       const token = getUserToken(user);
       res.status(responses.ok.statusCode).json({
         token,
@@ -263,7 +276,11 @@ router.post(
         email,
       },
     });
-    if(user.is_verify===false){res.status(responses.validationError.statusCode).send({message:"User not verified"});}
+    if (user.is_verify === false) {
+      res
+        .status(responses.validationError.statusCode)
+        .send({ message: "User not verified" });
+    }
     if (!user || !user.validatePassword(password)) {
       const err = new Error("Login Failed");
       err.status = 401;
@@ -348,7 +365,7 @@ router.post(
     }
 
     res.status(responses.ok.statusCode).json({
-      userToken
+      userToken,
     });
   })
 );
@@ -385,11 +402,11 @@ router.post(
         }
       );
       sendEmail({
-        "to": existingUser.email,
-        "subject": "Password Changed Successfully",
-        "templateName": "passwordChanged", // Name of the EJS template file without the ".ejs" extension
-        "templateData": null
-      })
+        to: existingUser.email,
+        subject: "Password Changed Successfully",
+        templateName: "passwordChanged", // Name of the EJS template file without the ".ejs" extension
+        templateData: null,
+      });
 
       res.status(200).json({ message: "Password changed successfully" });
     } catch (err) {

@@ -1,32 +1,31 @@
 import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
-import AuthContext from "../../context/AuthContext";
 import logo from "../../assets/logo.png";
 import "../../css/LoginPage.css";
 import apiServer from "../../config/apiServer";
 import { MdKeyboardBackspace } from "react-icons/md";
+import { useSnackbar } from "../SnackbarContext";
+
 const RegisterPage = () => {
   const { register, handleSubmit, errors } = useForm();
-  const { setAuth, setEmail, setUserId, setUser } = useContext(AuthContext);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const { showSnackbar } = useSnackbar();
   const onSubmit = async ({ name, email, password }) => {
     setLoading(true);
     try {
       const res = await apiServer.post("/register", { name, email, password });
-      localStorage.setItem("onboard", res.data.token);
-      localStorage.setItem("email", res.data.email);
-      localStorage.setItem("userId", res.data.id);
-      window.location.href = "/register/onboard";
-      setErrorMessage("");
-      setUser(res.data);
-      setAuth(res.data.token);
-      setEmail(res.data.email);
-      setUserId(res.data.id);
-    } catch (err) {
+
+      console.log("res--->", res);
       setLoading(false);
-      console.log("err in RegisterPage->", err.status);
-      setErrorMessage("Something went wrong with registering");
+      window.location.href = "/login";
+      showSnackbar("please check your email to verify.", 5000);
+    } catch (err) {
+      console.log("err--->", err);
+      setLoading(false);
+      if (err.response.status === 422) {
+        showSnackbar("please check your email to verify.");
+      } else setErrorMessage("Something went wrong with registering");
     }
   };
 

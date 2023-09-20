@@ -11,10 +11,12 @@ export const SnackbarProvider = ({ children }) => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [varient, setVarient] = useState("");
+  const [duration, setDuration] = useState(3000);
 
-  const showSnackbar = (message, varient) => {
+  const showSnackbar = (message, time, varient) => {
     setVarient(varient);
     setMessage(message);
+    setDuration(time);
     setSnackbarOpen(true);
   };
 

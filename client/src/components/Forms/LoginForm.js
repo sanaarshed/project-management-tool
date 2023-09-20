@@ -36,7 +36,11 @@ const LoginForm = () => {
       // setUser(res.data);
     } catch (err) {
       setLoading(false);
-      setErrorMessage("The provided credentials were invalid");
+      if (err.response.status === 422)
+        setErrorMessage(
+          "User is not verified, Please check your email or sign up again to verify user."
+        );
+      else setErrorMessage("The provided credentials were invalid");
     }
   };
 
