@@ -3,6 +3,7 @@ const { asyncHandler } = require("./utilities/utils");
 const { requireAuth } = require("./utilities/auth");
 const { check, validationResult } = require("express-validator");
 const { Comment } = require("../db/models");
+const response = require("./utilities/response");
 
 const router = express.Router();
 
@@ -25,10 +26,10 @@ router.delete(
   asyncHandler(async (req, res, next) => {
     const comment_id = req.params.id;
 
-    const comment = await Comment.delete({
+    await Comment.delete({
       where: { id: comment_id },
     });
-    res.json(202);
+    res.json(response.ok.statusCode);
   })
 );
 

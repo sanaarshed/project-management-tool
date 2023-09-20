@@ -4,6 +4,7 @@ const { requireAuth } = require("./utilities/auth");
 const { check, validationResult } = require("express-validator");
 const { TaskList, Task } = require("../db/models");
 const router = express.Router();
+const response = require("./utilities/response");
 
 //Authenticates user before being able to use API
 // router.use(requireAuth);
@@ -58,9 +59,9 @@ router.post(
       tasklist_id: tasklist_id,
     });
     if (!task) {
-      res.status(404);
+      res.status(response.notFound.statusCode);
     } else {
-      res.json(task).status(201);
+      res.json(task).status(response.created.statusCode);
     }
   })
 );
@@ -74,7 +75,7 @@ router.delete(
     const tasklist = await TaskList.destroy({
       where: { id: tasklist_id },
     });
-    res.json(202);
+    res.json(response.ok.statusCode);
   })
 );
 
@@ -97,10 +98,9 @@ router.put(
           },
         }
       );
-      console.log(newIndex);
       res.json(updateIndex);
     } catch (err) {
-      res.status(401).send({ error: "Something went wrong" });
+      res.status(response.internalServerError.statusCode).send({ error: response.internalServerError.message });
     }
   })
 );

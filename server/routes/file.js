@@ -6,6 +6,7 @@ const { File, Task } = require("../db/models");
 const fileUpload = require("express-fileupload"); // Import express-fileupload middleware
 const path = require("path");
 const fs = require("fs");
+const response = require("./utilities/response");
 
 const router = express.Router();
 
@@ -22,11 +23,11 @@ router.post(
     // Check if the task with the given ID exists
     const task = await Task.findByPk(taskId);
     if (!task) {
-      return res.status(404).json({ message: "Task not found." });
+      return res.status(response.notFound.statusCode).json({ message: response.notFound.message });
     }
 
     if (!req.files || Object.keys(req.files).length === 0) {
-      return res.status(400).json({ message: "No files were uploaded." });
+      return res.status(response.fileNotUpload.statusCode).json({ message: response.fileNotUpload.message });
     }
 
     const uploadedFile = req.files.file; // "uploadedFile" should match the field name in your form
@@ -37,8 +38,7 @@ router.post(
     // Save the uploaded file to the server
     uploadedFile.mv(uploadPath, async (err) => {
       if (err) {
-        console.error("File upload error:", err); // Log the error for debugging
-        return res.status(500).json({ message: "File upload failed." });
+        return res.status(response.internalServerError.statusCode).json({ message: response.fileNotUpload.message });
       }
 
       // Create a new File record in the database
@@ -49,11 +49,11 @@ router.post(
       });
       if (!file) {
         return res
-          .status(400)
-          .json({ message: "Failed to create a file record." });
+          .status(response.fileNotUpload.statusCode)
+          .json({ message: response.fileNotUpload.message });
       }
 
-      res.json({ message: "File uploaded successfully.", file });
+      res.json({ message: response.fileUploaded.message, file });
     });
   })
 );
@@ -68,7 +68,7 @@ router.get(
       },
     });
     if (!file) {
-      return res.status(404).json({ message: "File not found." });
+      return res.status(response.notFound.statusCode).json({ message: response.notFound.message });
     }
 
     // Get the file path
@@ -76,7 +76,7 @@ router.get(
 
     // Check if the file exists
     if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ message: "File not found on the server." });
+      return res.status(response.notFound.statusCode).json({ message: response.notFound.message });
     }
 
     // Set appropriate headers for the response
@@ -98,7 +98,7 @@ router.get("/:fileName", async (req, res) => {
       },
     });
     if (!file) {
-      return res.status(404).json({ message: "File not found." });
+      return res.status(response.notFound.statusCode).json({ message: response.notFound.message });
     }
 
     // Get the file path
@@ -106,7 +106,7 @@ router.get("/:fileName", async (req, res) => {
 
     // Check if the file exists
     if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ message: "File not found on the server." });
+      return res.status(response.notFound.statusCode).json({ message: response.notFound.message });
     }
 
     // Determine the content type based on the file extension
@@ -131,8 +131,7 @@ router.get("/:fileName", async (req, res) => {
     // Send the file to the client
     res.sendFile(filePath);
   } catch (err) {
-    console.error("Error:", err);
-    res.status(500).json({ message: "Internal server error." });
+    res.status(response.internalServerError.statusCode).json({ message: response.internalServerError.message });
   }
 });
 
