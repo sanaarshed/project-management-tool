@@ -163,18 +163,40 @@ router.post(
   })
 );
 
-//Delete project
+// Delete project
 router.delete(
   "/:id",
   asyncHandler(async (req, res, next) => {
-    const team_id = req.params.id;
-    const project_id = req.params.projectId;
-    const project = await Project.delete({
-      where: { id: project_id },
-    });
-    res.status(response.ok.statusCode);
+    const project_id = req.params.id;
+    try {
+      // Check if the project exists
+      const project = await Project.findOne({
+        where: { id: project_id },
+      });
+
+      if (!project) {
+        return res.status(response.notFound.statusCode).json({ error: response.notFound.message });
+      }
+
+      // Delete associations in UserProjects table where project_id matches
+      await UserProject.destroy({
+        where: { project_id: project_id },
+      });
+
+      // Now, you can safely delete the project in the Projects table
+      await Project.destroy({
+        where: { id: project_id },
+      });
+
+      // Send a success response
+      res.status(response.ok.statusCode).json({ message: response.deleteProject.message });
+    } catch (error) {
+      console.error(error);
+      res.status(response.internalServerError.statusCode).json({ error: response.internalServerError.message });
+    }
   })
 );
+
 
 //get everything about project
 

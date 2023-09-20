@@ -168,6 +168,41 @@ router.post(
   })
 );
 
+
+// Delete a user from a team
+router.delete(
+  "/:teamId/user/:userId",
+  asyncHandler(async (req, res, next) => {
+    const team_id = req.params.teamId;
+    const user_id = req.params.userId;
+
+    try {
+      // Check if the user is a member of the team
+      const userteam = await UserTeam.findOne({
+        where: {
+          team_id: team_id,
+          user_id: user_id,
+        },
+      });
+
+      if (!userteam) {
+        // If the user is not a member, return a "Not Found" response
+        return res.status(response.notFound.statusCode).json({ error: 'User not found in the team' });
+      }
+
+      // If the user is a member, delete the UserTeam association
+      await userteam.destroy();
+
+      // Send a success response
+      res.status(response.ok.statusCode).json({ message: 'User removed from the team' });
+    } catch (error) {
+      console.error(error);
+      res.status(response.internalServerError.statusCode).json({ error: response.internalServerError.message });
+    }
+  })
+);
+
+
 //Edit team description
 router.put(
   "/:teamId/description",

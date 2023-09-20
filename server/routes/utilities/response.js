@@ -30,6 +30,9 @@ module.exports = {
       statusCode: 400,
       message: 'file Not upload!',
     },
+    deleteProject:{
+      message:'Project deleted successfully'
+    },
     fileUploaded:{
       message: "File uploaded successfully."
     },
