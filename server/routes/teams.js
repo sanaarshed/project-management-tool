@@ -6,6 +6,7 @@ const { check, validationResult } = require("express-validator");
 const { Team, UserTeam, Project, UserProject } = require("../db/models");
 const jwt = require("jsonwebtoken");
 const { Invitations, User } = require("../db/models");
+const { sendEmail } = require("./utilities/email");
 
 
 
@@ -243,9 +244,11 @@ router.post(
       }
 
       const [userExistInvitation, user, team] = await Promise.all([
-        Invitations.findOne({ where: { email } }),
+        Invitations.findOne({ where: { email,is_active:false } }),
         User.findOne({ where: { id: invitedBy } }),
-        Team.findOne({ where: { id: teamId } }),
+        Team.findOne({ where: { id: teamId },include: [
+          { model: Project },
+        ], }),
       ]);
 
       if (userExistInvitation || !user || !team) {
@@ -261,6 +264,16 @@ router.post(
       }
 
       const invited = await Invitations.create({ email, team_id: teamId, invited_by: invitedBy });
+      sendEmail({
+        "to": email,
+        "subject": "Invite for join WorkPlace",
+        "templateName": "inviteUserWorkplace", // Name of the EJS template file without the ".ejs" extension
+        "templateData": {
+          "workplaceName": team.Projects[0].name,
+          "inviterName": user.name
+        }
+      })
+    
 
       res.json(invited);
     } catch (error) {

@@ -5,6 +5,8 @@ const { check, validationResult } = require("express-validator");
 const { User, Team, UserTeam, Invitations } = require("../db/models");
 const { getUserToken, requireAuth, tokenVerify } = require("./utilities/auth");
 const { sendEmail } = require("./utilities/email");
+const responses = require("./utilities/response");
+
 
 const router = express.Router();
 
@@ -68,7 +70,7 @@ router.post(
 
     if (!validatorErr.isEmpty()) {
       const errors = validatorErr.array().map((error) => error.msg);
-      res.status(422).json(["Errors", ...errors]);
+      res.status(responses.validationError.statusCode).json(["Errors", ...errors]);
       return;
     }
 
@@ -83,7 +85,7 @@ router.post(
       },
     });
     if (existingUser) {
-      res.status(422).send({ Error: "User already exists" });
+      res.status(responses.userAlreadyExists.statusCode).send({ Error: responses.userAlreadyExists.message });
       return;
     }
 
@@ -148,7 +150,7 @@ router.put(
     }
 
     const { email, teamName } = req.body;
-    // try {
+    try {
 
     const user = await User.findOne({
       where: {
@@ -156,7 +158,7 @@ router.put(
       },
     });
     const token = getUserToken(user);
-    res.status(200).json({
+    res.status(responses.ok.statusCode).json({
       token,
     });
 
@@ -165,14 +167,14 @@ router.put(
       name: teamName,
     });
     //Tie user to team
-    const userTeam = await UserTeam.create({
+    await UserTeam.create({
       user_id: user.id,
       team_id: team.id,
     });
 
-    // } catch (err) {
-    //   res.status(422).send(err.message);
-    // }
+    } catch (err) {
+      res.status(responses.validationError.statusCode).send(err.message);
+    }
   })
 );
 
@@ -182,9 +184,6 @@ router.post(
   validateEmailPassword,
   asyncHandler(async (req, res, next) => {
     const validatorErr = validationResult(req);
-
-    console.log("req.body--->", req.body);
-
     if (!validatorErr.isEmpty()) {
       const errors = validatorErr.array().map((error) => error.msg);
       res.json(["ERRORS", ...errors]);
@@ -193,15 +192,13 @@ router.post(
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(422).send({ error: "Must provide email and password" });
+      return res.status(responses.missingEmailAndPassword.statusCode).send({ error: responses.missingEmailAndPassword.message });
     }
     const user = await User.findOne({
       where: {
         email,
       },
     });
-    console.log("find user.email--->", user.email);
-
     if (!user || !user.validatePassword(password)) {
       const err = new Error("Login Failed");
       err.status = 401;
@@ -211,6 +208,30 @@ router.post(
       return;
     } else {
       const token = getUserToken(user);
+      const existingInvitationUser = await Invitations.findOne({
+        where: {
+          email: user.email,
+          is_active: false
+        }
+      });
+      if(existingInvitationUser){
+        const userteam = await UserTeam.create({
+          team_id: existingInvitationUser.team_id,
+          user_id: user.id,
+        });
+        if(userteam){
+          await Invitations.update(
+            {
+              is_active: true,
+            },
+            {
+              where: {
+                id: existingInvitationUser.id,
+              },
+            }
+          );
+        }
+      }
 
       res.json({
         id: user.id,
@@ -233,7 +254,7 @@ router.post(
       },
     });
     if (!existingUser) {
-      res.status(404).send({ Error: "User not Found!" });
+      res.status(responses.notFound.statusCode).send({ Error: responses.notFound.message });
       return;
     }
     const userToken = getUserToken(existingUser);
@@ -248,7 +269,7 @@ router.post(
           }
         }
       );
-      const email = sendEmail({
+      sendEmail({
         "to": userEmail,
         "subject": "ForgetPassword",
         "templateName": "forgetPassword", // Name of the EJS template file without the ".ejs" extension
@@ -256,7 +277,6 @@ router.post(
           "token": userToken
         }
       })
-      console.log(email)
     }
 
     res.status(200).json({
@@ -277,13 +297,12 @@ router.post(
       },
     });
     if (!existingUser) {
-      res.status(404).send({ Error: "User not Found!" });
+      res.status(responses.notFound.statusCode).send({ Error: responses.notFound.message });;
       return;
     }
 
     const token =await tokenVerify(existingUser.token);
-    console.log("tokrn",token)
-    if(!token){res.status(404).send({ Error: "Token not valid!" });
+    if(!token){res.status(responses.tokenInvalid.statusCode).send({ Error: responses.tokenInvalid.message });
     return;}
     await User.update(
       {
@@ -299,7 +318,7 @@ router.post(
     );
 
 
-    res.status(200).json({ message: "Password changed successfully" });
+    res.status(responses.passwordChangedSuccessfully.statusCode).json({ message: responses.passwordChangedSuccessfully.message });
     } catch (err) {
       res.status(422).send({ error: err });
     }

@@ -161,7 +161,7 @@ const PopOutTaskDetails = ({
   };
 
   const handleCommentSubmit = async ({ text }) => {
-    // const user_id = localStorage.getItem("userId");
+    const user_id = localStorage.getItem("userId");
     await apiServer.post(`/task/${task.id}/comment`, {
       text,
       user_id,
