@@ -62,7 +62,7 @@ const TaskDetailsForm = ({
       }
       closeModal();
     } catch (err) {
-      console.log(err);
+      console.log("err in /task/user:", err);
     }
   };
 
@@ -76,7 +76,7 @@ const TaskDetailsForm = ({
       await taskdispatch({ type: "update_task", payload: res.data });
       closeModal();
     } catch (err) {
-      console.log(err);
+      console.log("err in /task/user:", err);
     }
   };
 

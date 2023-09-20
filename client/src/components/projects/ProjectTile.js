@@ -26,6 +26,7 @@ const ProjectTile = ({ project, teamId, id }) => {
     return <Loader />;
   }
   const team_id = teamId || team.id;
+  console.log("project--->", project);
   return (
     <Link
       className="project-tile--link"

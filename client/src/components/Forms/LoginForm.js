@@ -65,7 +65,7 @@ const LoginForm = () => {
       setUser(res.data);
     } catch (err) {
       setLoading(false);
-      console.log(err);
+      console.log("err in demoLogin-->", err);
       setErrorMessage("Something went wrong");
     }
   };

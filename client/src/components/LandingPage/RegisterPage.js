@@ -25,7 +25,7 @@ const RegisterPage = () => {
       setUserId(res.data.id);
     } catch (err) {
       setLoading(false);
-      console.log(err.status);
+      console.log("err in RegisterPage->", err.status);
       setErrorMessage("Something went wrong with registering");
     }
   };

@@ -8,8 +8,6 @@ const jwt = require("jsonwebtoken");
 const { Invitations, User } = require("../db/models");
 const { sendEmail } = require("./utilities/email");
 
-
-
 const router = express.Router();
 //Authenticates user before being able to use API
 // router.use(requireAuth);
@@ -106,6 +104,7 @@ router.get(
       ],
       where: { id: team_id },
     });
+    console.log("team--->", team);
     if (!team) {
       res.send({ error: "No team exists" });
     }
@@ -117,26 +116,26 @@ router.get(
 router.post(
   "/user/:userId",
   asyncHandler(async (req, res, next) => {
-    console.log('--->',req)
+    console.log("--->", req);
     const user_id = req.params.userId;
     const { description, name } = req.body;
-    console.log('--->',description, name)
+    console.log("--->", description, name);
 
     if (description) {
-      console.log('--->')
+      console.log("--->");
       const team = await Team.create({
         description: description,
         name: name,
       });
-      console.log('team--->',team)
+      console.log("team--->", team);
 
       //Adds user to team
       const userteam = await UserTeam.create({
         team_id: team.id,
         user_id: user_id,
       });
-      
-      console.log('userteam--->',userteam)
+
+      console.log("userteam--->", userteam);
       res.json(team).status(201);
     } else if (!description) {
       const team = await Team.create({
@@ -180,7 +179,7 @@ router.post(
 router.put(
   "/:teamId/description",
   asyncHandler(async (req, res, next) => {
-    console.log('Edit team description--->',)
+    console.log("Edit team description--->");
     const team_id = req.params.teamId;
     const { description } = req.body;
     await Team.update(
@@ -244,11 +243,9 @@ router.post(
       }
 
       const [userExistInvitation, user, team] = await Promise.all([
-        Invitations.findOne({ where: { email,is_active:false } }),
+        Invitations.findOne({ where: { email, is_active: false } }),
         User.findOne({ where: { id: invitedBy } }),
-        Team.findOne({ where: { id: teamId },include: [
-          { model: Project },
-        ], }),
+        Team.findOne({ where: { id: teamId }, include: [{ model: Project }] }),
       ]);
 
       if (userExistInvitation || !user || !team) {
@@ -263,17 +260,20 @@ router.post(
         return res.status(409).json({ message: errorMessage });
       }
 
-      const invited = await Invitations.create({ email, team_id: teamId, invited_by: invitedBy });
+      const invited = await Invitations.create({
+        email,
+        team_id: teamId,
+        invited_by: invitedBy,
+      });
       sendEmail({
-        "to": email,
-        "subject": "Invite for join WorkPlace",
-        "templateName": "inviteUserWorkplace", // Name of the EJS template file without the ".ejs" extension
-        "templateData": {
-          "workplaceName": team.Projects[0].name,
-          "inviterName": user.name
-        }
-      })
-    
+        to: email,
+        subject: "Invite for join WorkPlace",
+        templateName: "inviteUserWorkplace", // Name of the EJS template file without the ".ejs" extension
+        templateData: {
+          workplaceName: team.Projects[0].name,
+          inviterName: user.name,
+        },
+      });
 
       res.json(invited);
     } catch (error) {
@@ -282,6 +282,5 @@ router.post(
     }
   })
 );
-
 
 module.exports = router;

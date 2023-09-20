@@ -31,18 +31,19 @@ const TeamPage = () => {
   const showSideProjectForm = () => {
     setSideProjectForm(!sideProjectForm);
   };
-  console.log(teamUsers);
+  // console.log("teamUsers->", teamUsers);
+
   const getTeam = async () => {
     try {
       const res = await apiServer.get(`/team/${teamId}`);
-      console.log(res);
+      console.log("res.data.Projects-.>", res.data.Projects);
       setTeam(res.data);
       setTeamProjects(res.data.Projects);
       setTeamUsers(res.data.Users);
       setTeamDescription(res.data.description);
       setLoading(false);
     } catch (err) {
-      console.log(err);
+      console.log("err in get team->", err);
     }
   };
 
