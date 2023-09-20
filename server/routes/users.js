@@ -60,6 +60,43 @@ router.get(
     res.json(users);
   })
 );
+router.get(
+  "/userVerify/:token",
+  // requireAuth,
+  asyncHandler(async (req, res, next) => {
+    const userToken = req.params.token
+    if(!userToken) return res.status(responses.notFound.statusCode).send({ Error: responses.notFound.message });
+    const token = await tokenVerify(userToken);
+      if (!token) {
+        res.status(404).send({ Error: "Token not valid!" });
+        return;
+      }
+
+    const verified = await User.update(
+      {
+        is_verify: true,
+        token: null
+      },
+      {
+        where: {
+          token: userToken,
+        },
+      }
+    );
+    if(verified){
+      sendEmail({
+        "to": token.email,
+        "subject": "Registration Successfully",
+        "templateName": "register", // Name of the EJS template file without the ".ejs" extension
+        "templateData": null
+      })
+      return res.status(responses.ok.statusCode).send({ Error: responses.ok.message });
+    }
+    return res.status(responses.badRequest.statusCode).send({ Error: responses.badRequest.message });
+
+
+  })
+);
 //Register
 router.post(
   "/register",
@@ -127,6 +164,30 @@ router.post(
       }
     }
 
+    if(user){
+    if (token) {
+      await User.update(
+        {
+          token: token,
+        },
+        {
+          where: {
+            email: user.email,
+          },
+        }
+      );
+
+      await sendEmail({
+        "to": user.email,
+        "subject": "User Verification",
+        "templateName": "userVerify", // Name of the EJS template file without the ".ejs" extension
+        "templateData": {
+          token: token,
+        }
+      })
+    }
+    }
+
     res.status(responses.ok.statusCode).json({
       id: user.id,
       token,
@@ -158,6 +219,7 @@ router.put(
           email: email,
         },
       });
+      if(user.is_verify===false){res.status(responses.validationError.statusCode).send({message:"User not verified"});}
       const token = getUserToken(user);
       res.status(responses.ok.statusCode).json({
         token,
@@ -201,6 +263,7 @@ router.post(
         email,
       },
     });
+    if(user.is_verify===false){res.status(responses.validationError.statusCode).send({message:"User not verified"});}
     if (!user || !user.validatePassword(password)) {
       const err = new Error("Login Failed");
       err.status = 401;
@@ -274,7 +337,7 @@ router.post(
           },
         }
       );
-      const email = sendEmail({
+      sendEmail({
         to: userEmail,
         subject: "ForgetPassword",
         templateName: "forgetPassword", // Name of the EJS template file without the ".ejs" extension
@@ -282,7 +345,6 @@ router.post(
           token: userToken,
         },
       });
-      console.log("emaill-->", email);
     }
 
     res.status(responses.ok.statusCode).json({
@@ -297,21 +359,16 @@ router.post(
     try {
       const { newPassword } = req.body;
       const { userToken } = req.params;
-      console.log("userToken----->", userToken);
       const existingUser = await User.findOne({
         where: {
           token: userToken,
         },
       });
-
-      console.log("existingUser-------->", existingUser);
       if (!existingUser) {
         res.status(404).send({ Error: "User not Found!" });
         return;
       }
-
       const token = await tokenVerify(existingUser.token);
-      console.log("tokrn", token);
       if (!token) {
         res.status(404).send({ Error: "Token not valid!" });
         return;
@@ -327,6 +384,12 @@ router.post(
           },
         }
       );
+      sendEmail({
+        "to": existingUser.email,
+        "subject": "Password Changed Successfully",
+        "templateName": "passwordChanged", // Name of the EJS template file without the ".ejs" extension
+        "templateData": null
+      })
 
       res.status(200).json({ message: "Password changed successfully" });
     } catch (err) {

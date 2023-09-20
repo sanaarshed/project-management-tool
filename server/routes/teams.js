@@ -253,7 +253,6 @@ router.post(
       }
 
       const invited = await Invitations.create({ email, team_id: teamId, invited_by: invitedBy });
-      console.log(team.Projects)
       sendEmail({
         "to": email,
         "subject": "Invite for join WorkPlace",

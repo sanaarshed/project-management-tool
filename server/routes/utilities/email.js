@@ -23,8 +23,9 @@ const sendEmail = async (data) => {
     // Render the EJS template
     const emailContent = await ejs.renderFile(
         path.join(templatePath, `${templateName}.ejs`),
-        templateData
+        templateData?templateData:""
       );
+      console.log("eeeeeeee",emailContent)
 
     // Email options
     const mailOptions = {
