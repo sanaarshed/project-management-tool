@@ -9,8 +9,6 @@ const { Invitations, User } = require("../db/models");
 const { sendEmail } = require("./utilities/email");
 const response = require("./utilities/response");
 
-
-
 const router = express.Router();
 //Authenticates user before being able to use API
 // router.use(requireAuth);
@@ -107,6 +105,7 @@ router.get(
       ],
       where: { id: team_id },
     });
+    console.log("team--->", team);
     if (!team) {
       res.status(response.noTeamExists.statusCode).send({ error: response.noTeamExists.message });
     }
@@ -236,11 +235,9 @@ router.post(
       }
 
       const [userExistInvitation, user, team] = await Promise.all([
-        Invitations.findOne({ where: { email,is_active:false } }),
+        Invitations.findOne({ where: { email, is_active: false } }),
         User.findOne({ where: { id: invitedBy } }),
-        Team.findOne({ where: { id: teamId },include: [
-          { model: Project },
-        ], }),
+        Team.findOne({ where: { id: teamId }, include: [{ model: Project }] }),
       ]);
 
       if (userExistInvitation || !user || !team) {
@@ -275,6 +272,5 @@ router.post(
     }
   })
 );
-
 
 module.exports = router;

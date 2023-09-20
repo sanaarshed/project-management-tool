@@ -33,9 +33,7 @@ router.post(
     const uploadedFile = req.files.file; // "uploadedFile" should match the field name in your form
 
     // Define the upload path (e.g., "uploads" folder + filename)
-    console.log(uploadedFile.name);
     const uploadPath = `uploads/${uploadedFile.name}`;
-    console.log(uploadPath);
 
     // Save the uploaded file to the server
     uploadedFile.mv(uploadPath, async (err) => {

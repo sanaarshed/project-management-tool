@@ -62,7 +62,7 @@ const PopOutTaskDetails = ({
     const userList = res.data.Users.filter((user) => {
       return user.id !== task.User.id;
     });
-    console.log(userList, "userList");
+    console.log("userList=>", userList);
     setProjectUsers(userList);
     updateProject();
   };
@@ -76,7 +76,7 @@ const PopOutTaskDetails = ({
   };
 
   const downloadFile = async (id) => {
-    console.log("downlaod File--->");
+    console.log("downlaod File------->");
     // await apiServer.get(`/file/download/${id}`);
     const fileUrl = `${process.env.REACT_APP_BASE_URL}/file/download/${id}`;
 
@@ -97,6 +97,7 @@ const PopOutTaskDetails = ({
   };
 
   const handleFileUpload = async () => {
+    console.log("handleFileUpload--->");
     if (selectedFile) {
       const formData = new FormData();
       formData.append("taskId", task.id); // Add taskId to the form data
@@ -147,13 +148,13 @@ const PopOutTaskDetails = ({
   const updateDueDate = async (date) => {
     setDueDate(date);
     await apiServer.put(`/task/${task.id}/dueDate`, { date });
-    console.log(date);
+    console.log("updateDueDate=>", date);
   };
   const updateDescription = async (e) => {
     const description = e.target.value;
     await apiServer.put(`/task/${task.id}/description`, { description });
 
-    console.log(e.target.value);
+    console.log("updateDescription>", e.target.value);
   };
 
   const handleDescriptionUpdate = (e) => {

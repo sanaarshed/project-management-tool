@@ -7,7 +7,6 @@ const { getUserToken, requireAuth, tokenVerify } = require("./utilities/auth");
 const { sendEmail } = require("./utilities/email");
 const responses = require("./utilities/response");
 
-
 const router = express.Router();
 
 validateUserFields = [
@@ -70,7 +69,9 @@ router.post(
 
     if (!validatorErr.isEmpty()) {
       const errors = validatorErr.array().map((error) => error.msg);
-      res.status(responses.validationError.statusCode).json(["Errors", ...errors]);
+      res
+        .status(responses.validationError.statusCode)
+        .json(["Errors", ...errors]);
       return;
     }
 
@@ -85,7 +86,9 @@ router.post(
       },
     });
     if (existingUser) {
-      res.status(responses.userAlreadyExists.statusCode).send({ Error: responses.userAlreadyExists.message });
+      res
+        .status(responses.userAlreadyExists.statusCode)
+        .send({ Error: responses.userAlreadyExists.message });
       return;
     }
 
@@ -97,21 +100,20 @@ router.post(
       updatedAt: new Date(),
     });
 
-
     const token = getUserToken(user);
 
     const existingInvitationUser = await Invitations.findOne({
       where: {
         email: user.email,
-        is_active: false
-      }
+        is_active: false,
+      },
     });
-    if(existingInvitationUser){
+    if (existingInvitationUser) {
       const userteam = await UserTeam.create({
         team_id: existingInvitationUser.team_id,
         user_id: user.id,
       });
-      if(userteam){
+      if (userteam) {
         await Invitations.update(
           {
             is_active: true,
@@ -151,27 +153,25 @@ router.put(
 
     const { email, teamName } = req.body;
     try {
+      const user = await User.findOne({
+        where: {
+          email: email,
+        },
+      });
+      const token = getUserToken(user);
+      res.status(responses.ok.statusCode).json({
+        token,
+      });
 
-    const user = await User.findOne({
-      where: {
-        email: email,
-      },
-    });
-    const token = getUserToken(user);
-    res.status(responses.ok.statusCode).json({
-      token,
-    });
-
-    //Create initial Team
-    const team = await Team.create({
-      name: teamName,
-    });
-    //Tie user to team
-    await UserTeam.create({
-      user_id: user.id,
-      team_id: team.id,
-    });
-
+      //Create initial Team
+      const team = await Team.create({
+        name: teamName,
+      });
+      //Tie user to team
+      await UserTeam.create({
+        user_id: user.id,
+        team_id: team.id,
+      });
     } catch (err) {
       res.status(responses.validationError.statusCode).send(err.message);
     }
@@ -192,7 +192,9 @@ router.post(
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(responses.missingEmailAndPassword.statusCode).send({ error: responses.missingEmailAndPassword.message });
+      return res
+        .status(responses.missingEmailAndPassword.statusCode)
+        .send({ error: responses.missingEmailAndPassword.message });
     }
     const user = await User.findOne({
       where: {
@@ -211,15 +213,15 @@ router.post(
       const existingInvitationUser = await Invitations.findOne({
         where: {
           email: user.email,
-          is_active: false
-        }
+          is_active: false,
+        },
       });
-      if(existingInvitationUser){
+      if (existingInvitationUser) {
         const userteam = await UserTeam.create({
           team_id: existingInvitationUser.team_id,
           user_id: user.id,
         });
-        if(userteam){
+        if (userteam) {
           await Invitations.update(
             {
               is_active: true,
@@ -242,83 +244,91 @@ router.post(
   })
 );
 
-
 router.post(
   "/forgetPassword",
   asyncHandler(async (req, res, next) => {
     const { userEmail } = req.body;
-    if(!userEmail){return res.status(400).json({ message: "Required fields are missing" });}
+    if (!userEmail) {
+      return res.status(400).json({ message: "Required fields are missing" });
+    }
     const existingUser = await User.findOne({
       where: {
         email: userEmail,
       },
     });
     if (!existingUser) {
-      res.status(responses.notFound.statusCode).send({ Error: responses.notFound.message });
+      res
+        .status(responses.notFound.statusCode)
+        .send({ Error: responses.notFound.message });
       return;
     }
     const userToken = getUserToken(existingUser);
-    if(userToken){
+    if (userToken) {
       await User.update(
         {
-          token:userToken
+          token: userToken,
         },
         {
           where: {
-            email: userEmail
-          }
+            email: userEmail,
+          },
         }
       );
-      sendEmail({
-        "to": userEmail,
-        "subject": "ForgetPassword",
-        "templateName": "forgetPassword", // Name of the EJS template file without the ".ejs" extension
-        "templateData": {
-          "token": userToken
-        }
-      })
+      const email = sendEmail({
+        to: userEmail,
+        subject: "ForgetPassword",
+        templateName: "forgetPassword", // Name of the EJS template file without the ".ejs" extension
+        templateData: {
+          token: userToken,
+        },
+      });
+      console.log("emaill-->", email);
     }
 
     res.status(responses.ok.statusCode).json({
       userToken
     });
-  }));
-
+  })
+);
 
 router.post(
   "/resetPassword/:userToken",
   asyncHandler(async (req, res) => {
     try {
-    const { newPassword } = req.body;
-    const { userToken } = req.params;
-    const existingUser = await User.findOne({
-      where: {
-        token: userToken,
-      },
-    });
-    if (!existingUser) {
-      res.status(responses.notFound.statusCode).send({ Error: responses.notFound.message });;
-      return;
-    }
-
-    const token =await tokenVerify(existingUser.token);
-    if(!token){res.status(responses.tokenInvalid.statusCode).send({ Error: responses.tokenInvalid.message });
-    return;}
-    await User.update(
-      {
-        
-        hashed_password:await bcrypt.hash(newPassword, 10),
-        token:null
-      },
-      {
+      const { newPassword } = req.body;
+      const { userToken } = req.params;
+      console.log("userToken----->", userToken);
+      const existingUser = await User.findOne({
         where: {
           token: userToken,
         },
+      });
+
+      console.log("existingUser-------->", existingUser);
+      if (!existingUser) {
+        res.status(404).send({ Error: "User not Found!" });
+        return;
       }
-    );
 
+      const token = await tokenVerify(existingUser.token);
+      console.log("tokrn", token);
+      if (!token) {
+        res.status(404).send({ Error: "Token not valid!" });
+        return;
+      }
+      await User.update(
+        {
+          hashed_password: await bcrypt.hash(newPassword, 10),
+          token: null,
+        },
+        {
+          where: {
+            token: userToken,
+          },
+        }
+      );
 
-    res.status(responses.passwordChangedSuccessfully.statusCode).json({ message: responses.passwordChangedSuccessfully.message });
+      res.status(200).json({ message: "Password changed successfully" });
     } catch (err) {
       res.status(422).send({ error: err });
     }
