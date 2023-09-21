@@ -139,7 +139,9 @@
 }
 
 .top-nav-bar-left {
-  padding-left: 20px;
+  padding: 16px;
+  display: flex;
+  gap: 14px;
 }
 .top-nav-bar-right {
   display: flex;

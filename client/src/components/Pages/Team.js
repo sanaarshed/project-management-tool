@@ -26,6 +26,7 @@ const TeamPage = () => {
   const [anchorMenu, setAnchorMenu] = useState(null);
   const [sideProjectForm, setSideProjectForm] = useState(false);
   const [teamState, teamdispatch] = useContext(TeamContext);
+  const userId = localStorage.getItem("userId");
   let history = useHistory();
 
   const showSideProjectForm = () => {
@@ -36,7 +37,7 @@ const TeamPage = () => {
   const getTeam = async () => {
     try {
       const res = await apiServer.get(`/team/${teamId}`);
-      console.log("res.data.Projects-.>", res.data.Projects);
+      // console.log("res.data.Projects-.>", res.data.Projects);
       setTeam(res.data);
       setTeamProjects(res.data.Projects);
       setTeamUsers(res.data.Users);
@@ -55,7 +56,6 @@ const TeamPage = () => {
   };
 
   const leaveTeam = async () => {
-    const userId = localStorage.getItem("userId");
     handleMenuClose();
     await apiServer.delete(`/userteam/${teamId}/user/${userId}`);
     const res = await apiServer.get(`/team/user/${userId}`);
@@ -63,6 +63,13 @@ const TeamPage = () => {
     history.push("/");
     // const resp = await apiServer.get(`/project/${projectId}/tasklists`);
     // setTasklists(resp.data);
+  };
+  const removeMember = async (user_id) => {
+    handleMenuClose();
+    await apiServer.delete(`/userteam/${teamId}/user/${user_id}`);
+    // const res = await apiServer.get(`/team/user/${userId}`);
+    // await teamdispatch({ type: "get_user_teams", payload: res.data });
+    getTeam();
   };
 
   const handleUpdate = (e) => {
@@ -95,7 +102,12 @@ const TeamPage = () => {
   // });
   return (
     <>
-      <TopNavBar name={teamName} setTeamProjects={setTeamProjects} />
+      <TopNavBar
+        teamId={teamId}
+        userId={userId}
+        name={teamName}
+        setTeamProjects={setTeamProjects}
+      />
       <div className="team-page-container">
         <div className="team-page-content-container">
           <div className="team-page-content-left">
@@ -134,7 +146,35 @@ const TeamPage = () => {
                   <Redirect to="/" />
                 ) : (
                   teamUsers.map((user, i) => {
-                    return <TeamMemberIcon user={user} key={i} />;
+                    return (
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          width: "100%",
+                        }}
+                      >
+                        <TeamMemberIcon user={user} key={i} />
+
+                        <div>
+                          {userId !== user.id ? (
+                            <AiOutlineEllipsis onClick={handleMenuClick} />
+                          ) : null}
+                          <Menu
+                            style={{ marginTop: "40px" }}
+                            anchorEl={anchorMenu}
+                            keepMounted
+                            open={Boolean(anchorMenu)}
+                            onClose={handleMenuClose}
+                          >
+                            <MenuItem onClick={() => removeMember(user.id)}>
+                              Remove Member
+                            </MenuItem>
+                          </Menu>
+                        </div>
+                      </div>
+                    );
                   })
                 )}
 

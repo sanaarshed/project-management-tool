@@ -82,8 +82,18 @@ const TaskForm = ({
     description,
   }) => {
     console.log("  tasklistId,--->", tasklistId);
+    console.log("projectTaskLists--->", projectTaskLists);
+    console.log("projectId--->", projectId);
+    console.log("tasklist--->", tasklistId);
+    console.log("assigneeId--->", assigneeId);
 
-    if (projectTaskLists.length > 0)
+    if (
+      projectTaskLists.length > 0 &&
+      name &&
+      projectId &&
+      assigneeId &&
+      tasklistId
+    )
       await apiServer.post(`/tasklist/${tasklistId}/task`, {
         name,
         projectId,
