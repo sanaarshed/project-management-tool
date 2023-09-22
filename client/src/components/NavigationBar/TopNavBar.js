@@ -28,6 +28,7 @@ const TopNavBar = ({
   teamId,
   userId,
   projectId,
+  getTeam,
   setTeamProjects,
   setTasklists,
   sidebar,
@@ -120,7 +121,8 @@ const TopNavBar = ({
 
     if (projectId) {
       await apiServer.delete(`/project/${projectId}`);
-      history.push("/");
+      getTeam && getTeam();
+      history.goBack();
     } else if (teamId) {
       try {
         if (userId && teamId) {
@@ -129,7 +131,7 @@ const TopNavBar = ({
           );
           if (res.status === 204) {
             getUpdatedData();
-
+            getTeam && getTeam();
             showSnackbar(name + " deleted successfully!");
             history.push("/");
           }

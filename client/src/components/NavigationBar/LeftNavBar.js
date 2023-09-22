@@ -142,7 +142,7 @@ const LeftNavBar = ({ showSidebar, sidebar }) => {
               </div>
               {teamState.teams ? renderedList : <div>Loading...</div>}
             </div>
-            <div className="social-links">
+            {/* <div className="social-links">
               <div>
                 <a href="https://github.com/ctran01/Methodize" target="__blank">
                   <ImGithub className="social-icon" />
@@ -156,7 +156,7 @@ const LeftNavBar = ({ showSidebar, sidebar }) => {
                   <ImLinkedin className="social-icon" />
                 </a>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 
