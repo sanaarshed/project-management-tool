@@ -175,7 +175,9 @@ router.delete(
       });
 
       if (!project) {
-        return res.status(response.notFound.statusCode).json({ error: response.notFound.message });
+        return res
+          .status(response.notFound.statusCode)
+          .json({ error: response.notFound.message });
       }
 
       // Delete associations in UserProjects table where project_id matches
@@ -189,14 +191,17 @@ router.delete(
       });
 
       // Send a success response
-      res.status(response.ok.statusCode).json({ message: response.deleteProject.message });
+      res
+        .status(response.ok.statusCode)
+        .json({ message: response.deleteProject.message });
     } catch (error) {
       console.error(error);
-      res.status(response.internalServerError.statusCode).json({ error: response.internalServerError.message });
+      res
+        .status(response.internalServerError.statusCode)
+        .json({ error: response.internalServerError.message });
     }
   })
 );
-
 
 //get everything about project
 
@@ -236,6 +241,25 @@ router.get(
     });
 
     res.json(project);
+  })
+);
+
+//Edit Project name
+router.put(
+  "/:projectId/name",
+  asyncHandler(async (req, res, next) => {
+    const project_id = req.params.projectId;
+    const { name } = req.body;
+    await Project.update(
+      {
+        name: name,
+      },
+      {
+        where: {
+          id: project_id,
+        },
+      }
+    );
   })
 );
 

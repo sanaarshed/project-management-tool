@@ -39,7 +39,7 @@ const TopNavBar = ({
   const [anchorTeam, setAnchorTeam] = useState(null);
   const [openProject, setOpenProject] = useState(false);
   const [openTask, setOpenTask] = useState(false);
-  const [editTeamName, setEditTeamName] = useState("");
+  const [editName, setEditName] = useState("");
   const [confirmDialogOpen, setConfirmDialog] = useState(false);
   const [userState, userdispatch] = useContext(UserContext);
   const [teamState, teamdispatch] = useContext(TeamContext);
@@ -100,11 +100,18 @@ const TopNavBar = ({
 
   const handleEdit = async (event) => {
     setEdit(false);
-    await apiServer
-      .put(`/team/${teamId}/name`, {
-        name: editTeamName,
-      })
-      .then(() => getUpdatedData());
+    if (projectId) {
+      await apiServer
+        .put(`/project/${projectId}/name`, {
+          name: editName,
+        })
+        .then(() => getUpdatedData());
+    } else
+      await apiServer
+        .put(`/team/${teamId}/name`, {
+          name: editName,
+        })
+        .then(() => getUpdatedData());
   };
   const handleDelete = async (event) => {
     //delete team
@@ -113,7 +120,7 @@ const TopNavBar = ({
 
     if (projectId) {
       await apiServer.delete(`/project/${projectId}`);
-      history.goBack();
+      history.push("/");
     } else if (teamId) {
       try {
         if (userId && teamId) {
@@ -124,7 +131,7 @@ const TopNavBar = ({
             getUpdatedData();
 
             showSnackbar(name + " deleted successfully!");
-            history.goBack();
+            history.push("/");
           }
         }
       } catch (e) {
@@ -139,7 +146,7 @@ const TopNavBar = ({
   const editTeam = (event) => {
     setEdit(true);
     handleClose();
-    setEditTeamName(name);
+    setEditName(name);
     //editTeam
   };
   const handleConfirmDialogClose = (event) => {
@@ -173,11 +180,11 @@ const TopNavBar = ({
       <ConfirmDialoge />
       <div className="top-nav-bar-left">
         {!edit ? (
-          <h2>{name}</h2>
+          <h2>{name && name}</h2>
         ) : (
           <input
             type="text"
-            value={editTeamName}
+            value={editName}
             onBlur={handleEdit}
             onKeyDown={(e) => {
               console.log("e.key--->", e.key);
@@ -188,7 +195,7 @@ const TopNavBar = ({
               }
             }}
             onChange={(e) => {
-              setEditTeamName(e.target.value);
+              setEditName(e.target.value);
             }}
           />
         )}
