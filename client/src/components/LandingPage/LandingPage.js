@@ -74,19 +74,19 @@ const LandingPage = () => {
             >
               The easiest way to manage team, projects, and tasks
             </h2>
-            <h3 style={{ fontWeight: "200", color: "white", width: "46%" }}>
+            {/* <h3 style={{ fontWeight: "200", color: "white", width: "46%" }}>
               Why use Methodize? Methodize gives you everything you need to stay
               in sync, hit deadlines, and reach your goals
-            </h3>
-            <div className="landing-message-button--div">
+            </h3> */}
+            {/* <div className="landing-message-button--div">
               <a href="/login">
                 <button className="landing-message--button">Try Demo</button>
               </a>
-            </div>
+            </div> */}
           </div>
-          <div className="landing-main-picture">
+          {/* <div className="landing-main-picture">
             <img src={picture} alt="landing" className="landing-picture" />
-          </div>
+          </div> */}
           {/* <div className="landing-main-bottom">
             <div className="landing-main-bottom-icons-container">
               <div className="icon-container">
