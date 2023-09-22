@@ -360,7 +360,11 @@ const ProjectPage = () => {
   return (
     <div>
       <div>
-        <TopNavBar name={project.name} setTasklists={setTasklists} />
+        <TopNavBar
+          projectId={projectId}
+          name={project.name}
+          setTasklists={setTasklists}
+        />
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable
             droppableId="all-columns"

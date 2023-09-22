@@ -3,7 +3,12 @@ import React from "react";
 import "../../css/PopOutForms.css";
 import { RiCloseLine } from "react-icons/ri";
 import ProjectForm from "../Forms/ProjectForm";
-const AddProjectPopOut = ({ showSideProjectForm, title, setTeamProjects }) => {
+const AddProjectPopOut = ({
+  showSideProjectForm,
+  title,
+  setTeamProjects,
+  ...rest
+}) => {
   return (
     <>
       <div
@@ -38,6 +43,7 @@ const AddProjectPopOut = ({ showSideProjectForm, title, setTeamProjects }) => {
             <ProjectForm
               showSideProjectForm={showSideProjectForm}
               setTeamProjects={setTeamProjects}
+              {...rest}
             />
           </div>
         </div>

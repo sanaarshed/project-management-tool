@@ -120,6 +120,7 @@
 .team-member-container {
   display: flex;
   padding: 8px 0;
+  align-items: center;
 }
 
 .team-member-icon {

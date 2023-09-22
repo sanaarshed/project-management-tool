@@ -277,6 +277,7 @@ const ProjectPage = ({ sidebar }) => {
     // <div style={{ height: "inherit" }}>
     <>
       <TopNavBar
+        projectId={projectId}
         name={project.name}
         setTasklists={setTasklists}
         sidebar={sidebar}
