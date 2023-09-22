@@ -214,6 +214,7 @@ const TeamPage = () => {
             showSideProjectForm={showSideProjectForm}
             setTeamProjects={setTeamProjects}
             title={"Add Project"}
+            getTeam={getTeam}
           />
         ) : null}
       </div>

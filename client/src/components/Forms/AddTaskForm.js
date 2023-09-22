@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import "../../css/Task.css";
 import Button from "@material-ui/core/Button";
 import { Modal } from "@material-ui/core";
@@ -21,6 +21,7 @@ const TaskForm = ({
   const [assigneeError, setAssigneeError] = useState();
   const [taskName, setTaskName] = useState();
   const [dueDate, setDueDate] = useState();
+  const userId = localStorage.getItem("userId");
 
   const [projectState, projectdispatch] = useContext(ProjectContext);
   const [taskState, taskdispatch] = useContext(TaskContext);
@@ -37,12 +38,14 @@ const TaskForm = ({
     },
   ]);
 
-  // const getUserProjects = async () => {
-  //   const userId = localStorage.getItem("userId");
-  //   const res = await apiServer.get(`/project/user/${userId}`);
-  //   setProjects(res.data);
-  //   setLoading(false);
-  // };
+  useEffect(() => {
+    getUserProjects();
+  }, [userId]);
+
+  const getUserProjects = async () => {
+    const res = await apiServer.get(`/project/user/${userId}`);
+    await projectdispatch({ type: "get_user_projects", payload: res.data });
+  };
 
   const handleNameChange = (e) => {
     setTaskName(e.target.value);
@@ -107,7 +110,6 @@ const TaskForm = ({
     //   `/project/user/${localStorage.getItem("userId")}`
     // );
 
-    const userId = localStorage.getItem("userId");
     const res = await apiServer.get(`/task/user/${userId}`);
     console.log("res--->", res);
     await taskdispatch({ type: "get_user_tasks", payload: res.data });
