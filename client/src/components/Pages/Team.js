@@ -107,6 +107,7 @@ const TeamPage = () => {
         userId={userId}
         name={teamName}
         setTeamProjects={setTeamProjects}
+        getTeam={getTeam}
       />
       <div className="team-page-container">
         <div className="team-page-content-container">
