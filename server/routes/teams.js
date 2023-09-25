@@ -371,7 +371,7 @@ router.post(
         subject: "Invite for join WorkPlace",
         templateName: "inviteUserWorkplace", // Name of the EJS template file without the ".ejs" extension
         templateData: {
-          workplaceName: team.Projects === [] ? team.Projects[0].name : null,
+          workplaceName: team.Projects.length === 0 ? null:team.Projects[0].name,
           inviterName: user.name,
         },
       });
