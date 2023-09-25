@@ -19,6 +19,7 @@ const router = express.Router();
 //get all projects
 router.get(
   "/",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const projects = await Project.findAll({});
 
@@ -51,6 +52,7 @@ router.get(
 
 router.get(
   "/user/:id",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const user_id = req.params.id;
     const projects = await Team.findAll({
@@ -92,6 +94,7 @@ router.get(
 //get all users in a project
 router.get(
   "/:id/users",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const project_id = req.params.id;
 
@@ -112,6 +115,7 @@ router.get(
 //get all taskslists for a project
 router.get(
   "/:id/tasklists",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const project_id = req.params.id;
     const tasklist = await TaskList.findAll({
@@ -136,6 +140,7 @@ router.get(
 //get team project is on
 router.get(
   "/:id/team",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const project_id = req.params.id;
     const team = await Team.findOne({
@@ -150,6 +155,7 @@ router.get(
 //Create tasklist for project
 router.post(
   "/:id/tasklist",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const project_id = req.params.id;
     const { name, userId } = req.body;
@@ -166,6 +172,7 @@ router.post(
 // Delete project
 router.delete(
   "/:id",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const project_id = req.params.id;
     try {
@@ -207,6 +214,7 @@ router.delete(
 
 router.get(
   "/:id",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const user_id = req.params.userId;
     const project_name = req.params.projectName;
@@ -247,6 +255,7 @@ router.get(
 //Edit Project name
 router.put(
   "/:projectId/name",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const project_id = req.params.projectId;
     const { name } = req.body;

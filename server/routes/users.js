@@ -37,7 +37,7 @@ const validateEmailPassword = [
 //Get user Information
 router.get(
   "/user/:id",
-  // requireAuth,
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const user_id = req.params.id;
     const user = await User.findOne({
@@ -53,7 +53,7 @@ router.get(
 
 router.get(
   "/users",
-  // requireAuth,
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const users = await User.findAll({
       attributes: ["id", "name", "email"],
@@ -63,7 +63,6 @@ router.get(
 );
 router.get(
   "/userVerify/:token",
-  // requireAuth,
   asyncHandler(async (req, res, next) => {
     const userToken = req.params.token;
     if (!userToken)

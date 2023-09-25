@@ -16,6 +16,7 @@ const router = express.Router();
 //Gets all Teams
 router.get(
   "/",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const teams = await Team.findAll({});
 
@@ -26,6 +27,7 @@ router.get(
 //get all users in a Team
 router.get(
   "/:id/users",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const team_id = req.params.id;
 
@@ -60,6 +62,7 @@ router.get(
 //get all teams for a user
 router.get(
   "/user/:id",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const user_id = req.params.id;
 
@@ -82,6 +85,7 @@ router.get(
 //get all projects for team
 router.get(
   "/:id/projects",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const team_id = req.params.id;
     const projects = await Project.findAll({
@@ -96,6 +100,7 @@ router.get(
 //get everything about team
 router.get(
   "/:id",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const team_id = req.params.id;
     const team = await Team.findOne({
@@ -118,6 +123,7 @@ router.get(
 //Create team
 router.post(
   "/user/:userId",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const user_id = req.params.userId;
     const { description, name } = req.body;
@@ -149,6 +155,7 @@ router.post(
 //Add other users to team
 router.post(
   "/:teamId/user/:userId",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const team_id = req.params.teamId;
     const user_id = req.params.userId;
@@ -175,6 +182,7 @@ router.post(
 // Delete a user from a team
 router.delete(
   "/:teamId/user/:userId",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const team_id = req.params.teamId;
     const user_id = req.params.userId;
@@ -214,6 +222,7 @@ router.delete(
 //Edit team description
 router.put(
   "/:teamId/description",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const team_id = req.params.teamId;
     const { description } = req.body;
@@ -232,6 +241,7 @@ router.put(
 //Edit team name
 router.put(
   "/:teamId/name",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const team_id = req.params.teamId;
     const { name } = req.body;
@@ -252,6 +262,7 @@ router.put(
 //Create Project for team
 router.post(
   "/:id/project",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     //need to add owner for project
     const team_id = req.params.id;
@@ -276,6 +287,7 @@ router.post(
 //Delete team
 router.delete(
   "/:teamId/userTeam/:userId",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const team_id = req.params.teamId;
     const user_id = req.params.userId;
@@ -320,6 +332,7 @@ router.delete(
 
 router.post(
   "/invite",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     try {
       const { email, teamId, invitedBy } = req.body;

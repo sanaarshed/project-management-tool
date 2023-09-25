@@ -17,6 +17,7 @@ router.use(fileUpload());
 
 router.post(
   "/upload",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const { taskId } = req.body; // Get the taskId from the request body
 
@@ -60,6 +61,7 @@ router.post(
 
 router.get(
   "/download/:id",
+  // requireAuth,
   asyncHandler(async (req, res, next) => {
     const file_id = req.params.id;
     const file = await File.findOne({

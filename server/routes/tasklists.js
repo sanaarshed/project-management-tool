@@ -12,6 +12,7 @@ const response = require("./utilities/response");
 //get all tasklists
 router.get(
   "/",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const tasklists = await TaskList.findAll({});
 
@@ -22,6 +23,7 @@ router.get(
 //get all tasks for tasklist
 router.get(
   "/:id/tasks",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const tasklist_id = req.params.id;
     const tasks = await Task.findAll({
@@ -36,6 +38,7 @@ router.get(
 //Create task to tasklist
 router.post(
   "/:id/task",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const tasklist_id = req.params.id;
     const {
@@ -69,6 +72,7 @@ router.post(
 //Delete TaskList
 router.delete(
   "/:id",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const tasklist_id = req.params.id;
 
@@ -82,6 +86,7 @@ router.delete(
 //Edit Column index
 router.put(
   "/:id/columnindex",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const { newIndex } = req.body;
     const tasklist_id = req.params.id;
@@ -109,6 +114,7 @@ router.put(
 
 router.put(
   "/:id/title",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const tasklist_id = req.params.id;
     const { columnTitle } = req.body;

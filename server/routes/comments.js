@@ -13,6 +13,7 @@ const router = express.Router();
 //get all comments
 router.get(
   "/",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const comments = await Comment.findAll({});
 
@@ -23,6 +24,7 @@ router.get(
 //Delete Comment
 router.delete(
   "/:id",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const comment_id = req.params.id;
 
