@@ -49,9 +49,6 @@ router.post(
       completed,
       description,
     } = req.body;
-    if (completed === []) {
-      completed = false;
-    }
     const task = await Task.create({
       name: name,
       project_id: projectId,
