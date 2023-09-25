@@ -13,6 +13,7 @@ const router = express.Router();
 //get all tasks
 router.get(
   "/",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const tasks = await Task.findAll({include: [{ model: File }]});
 
@@ -23,6 +24,7 @@ router.get(
 //get all tasks for user
 router.get(
   "/user/:id",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const user_id = req.params.id;
     const tasks = await Task.findAll({
@@ -38,6 +40,7 @@ router.get(
 //create comment for task
 router.post(
   "/:id/comment",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const task_id = req.params.id;
     const { text, user_id } = req.body;
@@ -58,6 +61,7 @@ router.post(
 //get all comments for task
 router.get(
   "/:id/comment",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const task_id = req.params.id;
     const comments = await Comment.findAll({
@@ -73,6 +77,7 @@ router.get(
 
 router.put(
   "/:id",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const task_id = req.params.id;
     const { name, due_date, description, completed } = req.body;
@@ -99,6 +104,7 @@ router.put(
 
 router.get(
   `/:id`,
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const task_id = req.params.id;
     const task = await Task.findOne({
@@ -131,6 +137,7 @@ router.get(
 //updates tasklist
 router.put(
   `/:id/tasklist`,
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const task_id = req.params.id;
     const { destinationTasklistId } = req.body;
@@ -156,6 +163,7 @@ router.put(
 //update project
 router.put(
   `/:id/project/:projectId`,
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const task_id = req.params.id;
     const project_id = req.params.projectId;
@@ -181,6 +189,7 @@ router.put(
 //update Assignee
 router.put(
   `/:id/assignee/:assigneeId`,
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const task_id = req.params.id;
     const assignee_id = req.params.assigneeId;
@@ -214,6 +223,7 @@ router.put(
 //update due date
 router.put(
   `/:id/dueDate`,
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const task_id = req.params.id;
     const { date } = req.body;
@@ -239,6 +249,7 @@ router.put(
 //update description
 router.put(
   `/:id/description`,
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const task_id = req.params.id;
     const { description } = req.body;
@@ -264,6 +275,7 @@ router.put(
 //update complete
 router.put(
   `/:id/complete`,
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const task_id = req.params.id;
     const { completed } = req.body;
@@ -310,6 +322,7 @@ router.put(
 //updates taskindex
 router.put(
   `/:id/taskindex`,
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const task_id = req.params.id;
     const { destinationIndex } = req.body;
@@ -335,6 +348,7 @@ router.put(
 //Delete Task
 router.delete(
   "/:id",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const task_id = req.params.id;
 

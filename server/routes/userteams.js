@@ -12,6 +12,7 @@ const router = express.Router();
 
 router.delete(
   "/:teamId/user/:userId",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const team_id = req.params.teamId;
     const user_id = req.params.userId;
@@ -43,6 +44,7 @@ router.delete(
 //get all userteams
 router.get(
   "/",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const userteams = await UserTeam.findAll({});
     res.json(userteams);
@@ -51,6 +53,7 @@ router.get(
 
 router.get(
   "/:id",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const userteams = await UserTeam.findAll({
       where: {
