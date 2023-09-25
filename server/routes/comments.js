@@ -21,6 +21,33 @@ router.get(
   })
 );
 
+
+//updates comment
+router.put(
+  `/:id`,
+  requireAuth,
+  asyncHandler(async (req, res, next) => {
+    const comment_id = req.params.id;
+    const data = req.body;
+    try {
+      await Comment.update(
+        {
+          ...data,updatedAt: new Date()
+        },
+        {
+          where: {
+            id: comment_id,
+          },
+        }
+      );
+      const comment = await Comment.findOne({ where: { id: comment_id } });
+      res.json(comment);
+    } catch (err) {
+      res.status(response.internalServerError.statusCode).send({ error: response.internalServerError.message });
+    }
+  })
+);
+
 //Delete Comment
 router.delete(
   "/:id",
