@@ -77,13 +77,15 @@ const PopOutTaskDetails = ({
 
   const downloadFile = async (id) => {
     console.log("downlaod File------->");
-    // await apiServer.get(`/file/download/${id}`);
-    const fileUrl = `${process.env.REACT_APP_BASE_URL}/file/download/${id}`;
-
+    const fileUrl = await apiServer.get(`/file/${id}`);
+    // const fileUrl = `${process.env.REACT_APP_BASE_URL}/file/download/${id}`;
+    console.log("fileUrl.path--->", fileUrl);
+    console.log("fileUrl.path--->", fileUrl.path);
     // Create a hidden anchor element
     const anchor = document.createElement("a");
+    o;
     anchor.style.display = "none";
-    anchor.href = fileUrl;
+    anchor.href = fileUrl.path;
     // anchor.download = "your-file-name.ext"; // You can specify the desired file name here
 
     // Add the anchor element to the DOM

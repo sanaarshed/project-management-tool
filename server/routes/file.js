@@ -24,11 +24,15 @@ router.post(
     // Check if the task with the given ID exists
     const task = await Task.findByPk(taskId);
     if (!task) {
-      return res.status(response.notFound.statusCode).json({ message: response.notFound.message });
+      return res
+        .status(response.notFound.statusCode)
+        .json({ message: response.notFound.message });
     }
 
     if (!req.files || Object.keys(req.files).length === 0) {
-      return res.status(response.fileNotUpload.statusCode).json({ message: response.fileNotUpload.message });
+      return res
+        .status(response.fileNotUpload.statusCode)
+        .json({ message: response.fileNotUpload.message });
     }
 
     const uploadedFile = req.files.file; // "uploadedFile" should match the field name in your form
@@ -39,7 +43,9 @@ router.post(
     // Save the uploaded file to the server
     uploadedFile.mv(uploadPath, async (err) => {
       if (err) {
-        return res.status(response.internalServerError.statusCode).json({ message: response.fileNotUpload.message });
+        return res
+          .status(response.internalServerError.statusCode)
+          .json({ message: response.fileNotUpload.message });
       }
 
       // Create a new File record in the database
@@ -61,7 +67,7 @@ router.post(
 
 router.get(
   "/download/:id",
-  // requireAuth,
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const file_id = req.params.id;
     const file = await File.findOne({
@@ -70,7 +76,9 @@ router.get(
       },
     });
     if (!file) {
-      return res.status(response.notFound.statusCode).json({ message: response.notFound.message });
+      return res
+        .status(response.notFound.statusCode)
+        .json({ message: response.notFound.message });
     }
 
     // Get the file path
@@ -78,13 +86,15 @@ router.get(
 
     // Check if the file exists
     if (!fs.existsSync(filePath)) {
-      return res.status(response.notFound.statusCode).json({ message: response.notFound.message });
+      return res
+        .status(response.notFound.statusCode)
+        .json({ message: response.notFound.message });
     }
 
     // Set appropriate headers for the response
     res.setHeader("Content-Disposition", `attachment; filename=${file.name}`);
     res.setHeader("Content-Type", "application/octet-stream");
-
+    console.log("filePath--->", filePath);
     // Create a readable stream from the file and pipe it to the response
     const fileStream = fs.createReadStream(filePath);
     fileStream.pipe(res);
@@ -100,7 +110,9 @@ router.get("/:fileName", async (req, res) => {
       },
     });
     if (!file) {
-      return res.status(response.notFound.statusCode).json({ message: response.notFound.message });
+      return res
+        .status(response.notFound.statusCode)
+        .json({ message: response.notFound.message });
     }
 
     // Get the file path
@@ -108,7 +120,9 @@ router.get("/:fileName", async (req, res) => {
 
     // Check if the file exists
     if (!fs.existsSync(filePath)) {
-      return res.status(response.notFound.statusCode).json({ message: response.notFound.message });
+      return res
+        .status(response.notFound.statusCode)
+        .json({ message: response.notFound.message });
     }
 
     // Determine the content type based on the file extension
@@ -133,7 +147,9 @@ router.get("/:fileName", async (req, res) => {
     // Send the file to the client
     res.sendFile(filePath);
   } catch (err) {
-    res.status(response.internalServerError.statusCode).json({ message: response.internalServerError.message });
+    res
+      .status(response.internalServerError.statusCode)
+      .json({ message: response.internalServerError.message });
   }
 });
 

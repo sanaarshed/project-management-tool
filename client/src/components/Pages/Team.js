@@ -23,6 +23,7 @@ const TeamPage = () => {
   const [teamUsers, setTeamUsers] = useState(null);
   const [teamDescription, setTeamDescription] = useState();
   const [loading, setLoading] = useState(true);
+  const [anchorMenuMain, setAnchorMenuMain] = useState(null);
   const [anchorMenu, setAnchorMenu] = useState(null);
   const [sideProjectForm, setSideProjectForm] = useState(false);
   const [teamState, teamdispatch] = useContext(TeamContext);
@@ -48,11 +49,18 @@ const TeamPage = () => {
     }
   };
 
-  const handleMenuClick = (event) => {
+  const handleRemoveMenuClick = (event) => {
     setAnchorMenu(event.currentTarget);
   };
-  const handleMenuClose = () => {
+  const handleRemoveMenuClose = () => {
     setAnchorMenu(null);
+  };
+
+  const handleMenuClick = (event) => {
+    setAnchorMenuMain(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setAnchorMenuMain(null);
   };
 
   const leaveTeam = async () => {
@@ -61,14 +69,11 @@ const TeamPage = () => {
     const res = await apiServer.get(`/team/user/${userId}`);
     await teamdispatch({ type: "get_user_teams", payload: res.data });
     history.push("/");
-    // const resp = await apiServer.get(`/project/${projectId}/tasklists`);
-    // setTasklists(resp.data);
   };
   const removeMember = async (user_id) => {
     handleMenuClose();
     await apiServer.delete(`/userteam/${teamId}/user/${user_id}`);
-    // const res = await apiServer.get(`/team/user/${userId}`);
-    // await teamdispatch({ type: "get_user_teams", payload: res.data });
+
     getTeam();
   };
 
@@ -100,6 +105,7 @@ const TeamPage = () => {
   //     <ProjectTile teamId={teamId} project={project} key={i} id={project.id} />
   //   );
   // });
+
   return (
     <>
       <TopNavBar
@@ -130,12 +136,15 @@ const TeamPage = () => {
               <div className="team-content-left-members-header">
                 <div className="team-content-title">Members</div>
                 <div>
-                  <AiOutlineEllipsis onClick={handleMenuClick} />
+                  <AiOutlineEllipsis
+                    onClick={handleMenuClick}
+                    style={{ cursor: "pointer" }}
+                  />
                   <Menu
                     style={{ marginTop: "40px" }}
-                    anchorEl={anchorMenu}
+                    anchorEl={anchorMenuMain}
                     keepMounted
-                    open={Boolean(anchorMenu)}
+                    open={Boolean(anchorMenuMain)}
                     onClose={handleMenuClose}
                   >
                     <MenuItem onClick={leaveTeam}>Leave Team</MenuItem>
@@ -159,15 +168,18 @@ const TeamPage = () => {
                         <TeamMemberIcon user={user} key={i} />
 
                         <div>
-                          {userId !== user.id ? (
-                            <AiOutlineEllipsis onClick={handleMenuClick} />
-                          ) : null}
+                          {userId == user.id ? null : (
+                            <AiOutlineEllipsis
+                              style={{ cursor: "pointer" }}
+                              onClick={handleRemoveMenuClick}
+                            />
+                          )}
                           <Menu
                             style={{ marginTop: "40px" }}
                             anchorEl={anchorMenu}
                             keepMounted
                             open={Boolean(anchorMenu)}
-                            onClose={handleMenuClose}
+                            onClose={handleRemoveMenuClose}
                           >
                             <MenuItem onClick={() => removeMember(user.id)}>
                               Remove Member

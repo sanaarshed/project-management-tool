@@ -386,18 +386,21 @@
   line-height: 28px;
   display: flex;
   border: 1px solid lightgreen;
+  background-color: rgb(47, 177, 47);
+  color: "#fff";
   cursor: pointer;
   justify-content: center;
+  align-items: center;
 }
 .check-mark-container {
   margin: 0px 5px;
 }
 .check-mark-icon__completed {
-  color: lightgreen;
+  color: rgb(255, 255, 255);
 }
 .mark-complete__completed {
   margin-right: 5px;
-  color: lightgreen;
+  color: rgb(255, 255, 255);
 }
 
 .complete-button__incompleted {
