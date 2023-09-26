@@ -101,12 +101,12 @@ router.get(
   })
 );
 
-router.get("/:id",requireAuth, async (req, res) => {
+router.get("/:name", async (req, res) => {
   try {
-    const file_id = req.params.id;
+    const file_name = req.params.name;
     const file = await File.findOne({
       where: {
-        id: file_id,
+        name: file_name,
       },
     });
     if (!file) {
@@ -150,6 +150,24 @@ router.get("/:id",requireAuth, async (req, res) => {
     res
       .status(response.internalServerError.statusCode)
       .json({ message: response.internalServerError.message });
+  }
+});
+
+router.get("/id/:id",requireAuth, async (req, res) => {
+  try {
+    const file_id = req.params.id;
+    const file = await File.findOne({
+      where: {
+        id: file_id,
+      },
+    });
+    if (!file) {
+      return res.status(response.notFound.statusCode).json({ message: response.notFound.message });
+    }
+
+    res.json({ message: response.ok.message, file });
+  } catch (err) {
+    res.status(response.internalServerError.statusCode).json({ message: response.internalServerError.message });
   }
 });
 
