@@ -191,6 +191,12 @@ router.delete(
       await UserProject.destroy({
         where: { project_id: project_id },
       });
+      await Task.destroy({
+        where: { project_id: project_id },
+      });
+      await TaskList.destroy({
+        where: { project_id: project_id },
+      });
 
       // Now, you can safely delete the project in the Projects table
       await Project.destroy({
