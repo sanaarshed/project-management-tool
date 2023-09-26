@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import apiServer from "../../config/apiServer";
 import Loader from "../Loader";
 import { useSnackbar } from "../SnackbarContext";
+import { RiCloseLine } from "react-icons/ri";
 
 const AddMemberForm = ({ teamId, clickClose, open, setTeamUsers }) => {
   const { register, handleSubmit, errors } = useForm();
@@ -78,11 +79,23 @@ const AddMemberForm = ({ teamId, clickClose, open, setTeamUsers }) => {
   return (
     <div>
       <Modal open={open} onClose={clickClose}>
-        <div className="tasklist-modal-container" style={{ minWidth: "auto" }}>
+        <div className="tasklist-modal-container">
+          <div className="m-3 flex justify-end">
+            <RiCloseLine
+              style={{
+                color: "black",
+                fontSize: "24px",
+                cursor: "pointer",
+              }}
+              onClick={clickClose}
+            />
+          </div>
           <form className="task-form" onSubmit={handleSubmit(onSubmit)}>
-            <h2 className="form-header">Add a member to the team!</h2>
-            <div className="form-top-container">
-              <div className="form-content">
+            <h2 className="mb-2 font-semibold">Add a member to the team!</h2>
+
+            {/* <div className="form-top-container"> */}
+            <div style={{ display: "flex" }} className="form-content">
+              <div className="flex justify-center items-start">
                 <label className="form-label">
                   <select
                     id="user-select"
@@ -101,26 +114,34 @@ const AddMemberForm = ({ teamId, clickClose, open, setTeamUsers }) => {
                     <p className="error-message">Please choose a user to add</p>
                   )}
                 </label>
-                <div className="flex justify-center gap-1 mt-2">
-                  <TextField
-                    size="small"
-                    variant="outlined"
-                    value={inviteEmail}
-                    onChange={(e) => setinviteEmail(e.target.value)}
-                    placeholder="Invite email"
-                  />
-                  <Button
-                    style={{ color: "#0093ff" }}
-                    onClick={handleSendEmailInvite}
-                    variant="contained"
-                  >
-                    Invite
-                  </Button>
-                </div>
+                <Button
+                  style={{ color: "#0093ff" }}
+                  type="submit"
+                  variant="contained"
+                >
+                  Add
+                </Button>
+              </div>
+              <div className="flex justify-between gap-2 mt-2">
+                <TextField
+                  size="small"
+                  variant="outlined"
+                  value={inviteEmail}
+                  onChange={(e) => setinviteEmail(e.target.value)}
+                  placeholder="Invite email"
+                />
+                <Button
+                  style={{ color: "#0093ff" }}
+                  onClick={handleSendEmailInvite}
+                  variant="contained"
+                >
+                  Invite
+                </Button>
               </div>
             </div>
+            {/* </div> */}
 
-            <div style={{ display: "flex", marginLeft: "160px" }}>
+            {/* <div style={{ display: "flex", marginLeft: "160px" }}>
               <Button
                 style={{ color: "#0093ff" }}
                 onClick={clickClose}
@@ -128,14 +149,7 @@ const AddMemberForm = ({ teamId, clickClose, open, setTeamUsers }) => {
               >
                 Cancel
               </Button>
-              <Button
-                style={{ color: "#0093ff" }}
-                type="submit"
-                color="primary"
-              >
-                Add
-              </Button>
-            </div>
+            </div> */}
           </form>
         </div>
       </Modal>

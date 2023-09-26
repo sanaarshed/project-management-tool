@@ -31,7 +31,6 @@ const AuthRoutes = () => {
     const res = await apiServer.get(`/user/${id}`);
 
     // .catch((e) => console.log("e--->", e));
-    console.log("getUserInfo--->", res);
     await userdispatch({ type: "get_user_info", payload: res.data });
   };
 

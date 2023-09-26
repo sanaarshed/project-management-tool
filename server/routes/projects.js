@@ -265,7 +265,7 @@ router.put(
   asyncHandler(async (req, res, next) => {
     const project_id = req.params.projectId;
     const { name } = req.body;
-    await Project.update(
+    const resp = await Project.update(
       {
         name: name,
       },
@@ -275,6 +275,7 @@ router.put(
         },
       }
     );
+    res.json(resp);
   })
 );
 

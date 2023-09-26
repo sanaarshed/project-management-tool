@@ -24,8 +24,6 @@ const LoginForm = () => {
     try {
       const res = await apiServer.post("/login", { email, password });
 
-      console.log("res.data.token--->", res.data.token);
-
       localStorage.setItem("email", res.data.email);
       localStorage.setItem("userId", res.data.id);
       localStorage.setItem("token", res.data.token);
@@ -35,8 +33,9 @@ const LoginForm = () => {
       // setEmail(res.data.email);
       // setUser(res.data);
     } catch (err) {
+      console.log("err--->", err);
       setLoading(false);
-      if (err.response.status === 422)
+      if (err.response?.status === 422)
         setErrorMessage(
           "User is not verified, Please check your email or sign up again to verify user."
         );

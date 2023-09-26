@@ -16,7 +16,6 @@ const RegisterPage = () => {
     try {
       const res = await apiServer.post("/register", { name, email, password });
 
-      console.log("res--->", res);
       setLoading(false);
       window.location.href = "/login";
       showSnackbar("please check your email to verify.", 5000);
