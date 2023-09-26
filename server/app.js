@@ -3,14 +3,7 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const { environment } = require("./config");
 const cors = require("cors");
-const userRouter = require("./routes/users");
-const taskRouter = require("./routes/tasks");
-const projectRouter = require("./routes/projects");
-const teamRouter = require("./routes/teams");
-const tasklistRouter = require("./routes/tasklists");
-const commentRouter = require("./routes/comments");
-const userteamRouter = require("./routes/userteams");
-const fileRouter = require("./routes/file");
+const Routers = require("./routes/index");
 const app = express();
 
 app.use(bodyParser.json());
@@ -22,14 +15,12 @@ app.use(bodyParser.json());
 app.use(morgan("dev"));
 app.use(cors({ origin: true }));
 
-app.use(userRouter);
-app.use("/task", taskRouter);
-app.use("/project", projectRouter);
-app.use("/team", teamRouter);
-app.use("/tasklist", tasklistRouter);
-app.use("/comment", commentRouter);
-app.use("/userteam", userteamRouter);
-app.use("/file", fileRouter);
+app.use(Routers);
+
+
+app.use('*', (req, res) => {
+  res.send('WELCOME TO SOO ZOO WATER PARK...😍😍😍')
+})
 
 
 

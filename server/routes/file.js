@@ -1,12 +1,12 @@
 const express = require("express");
-const { asyncHandler } = require("./utilities/utils");
-const { requireAuth, getUserToken } = require("./utilities/auth");
+const { asyncHandler } = require("../utilities/utils");
+const { requireAuth, getUserToken } = require("../utilities/auth");
 const { check, validationResult } = require("express-validator");
 const { File, Task } = require("../db/models");
 const fileUpload = require("express-fileupload"); // Import express-fileupload middleware
 const path = require("path");
 const fs = require("fs");
-const response = require("./utilities/response");
+const response = require("../utilities/response");
 
 const router = express.Router();
 

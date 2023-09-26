@@ -1,13 +1,13 @@
 const express = require("express");
-const { asyncHandler } = require("./utilities/utils");
-const { requireAuth } = require("./utilities/auth");
+const { asyncHandler } = require("../utilities/utils");
+const { requireAuth } = require("../utilities/auth");
 const { check, validationResult } = require("express-validator");
 
 const { Team, UserTeam, Project, UserProject } = require("../db/models");
 const jwt = require("jsonwebtoken");
 const { Invitations, User } = require("../db/models");
-const { sendEmail } = require("./utilities/email");
-const response = require("./utilities/response");
+const { sendEmail } = require("../utilities/email");
+const response = require("../utilities/response");
 
 const router = express.Router();
 //Authenticates user before being able to use API
