@@ -16,7 +16,7 @@ import PdfFileIcon from "../../assets/pdf-file.svg";
 import PsdFileIcon from "../../assets/psd-file.svg";
 import DocFileIcon from "../../assets/doc-file.svg";
 import DownloadICon from "../../assets/download-icon.svg";
-
+import { FiEdit } from "react-icons/fi";
 const PopOutTaskDetails = ({
   showSideTaskDetails,
   sideTaskDetails,
@@ -33,6 +33,7 @@ const PopOutTaskDetails = ({
   const [taskComments, setTaskComments] = useState(task.Comments);
   const [dueDate, setDueDate] = useState(new Date(task.due_date));
   const [selectedFile, setSelectedFile] = useState(null);
+  const [commentEdit, setCommentEdit] = useState(false);
   const [uploading, setUploading] = useState(false);
   // const [completed, setCompleted] = useState(task.completed);
   const [commentBox, setCommentBox] = useState(false);
@@ -102,6 +103,20 @@ const PopOutTaskDetails = ({
     }
   };
 
+  const onCommentEdit = async (commentId) => {
+    try {
+      await apiServer.post(`/comment/${commentId}`);
+    } catch (error) {
+      console.log("error--->", error);
+    }
+  };
+  const onEditClick = async (commentId) => {
+    try {
+      await apiServer.post(`/comment/${commentId}`);
+    } catch (error) {
+      console.log("error--->", error);
+    }
+  };
   const handleFileUpload = async () => {
     console.log("handleFileUpload--->");
     if (selectedFile) {
@@ -186,7 +201,6 @@ const PopOutTaskDetails = ({
   const updateComplete = async () => {
     // console.log(completed, "before");
     completed = !completed;
-    // const userId = localStorage.getItem("userId");
     // console.log(completed, "after");
 
     const updatedTask = await apiServer.put(`/task/${task.id}/complete`, {
@@ -246,29 +260,43 @@ const PopOutTaskDetails = ({
     ).format("MMM D");
 
     return (
-      <div className="comment-container">
-        <div className="comment-header">
-          <div
-            className="user-avatar"
-            style={{
-              width: "25px",
-              height: "25px",
-              marginRight: "10px",
-            }}
-          >
-            {(comment.User.name[0] + comment.User.name[1]).toUpperCase()}
-          </div>
-
-          <div>
-            <p
-              style={{ fontWeight: 500, marginRight: "10px", fontSize: "15px" }}
+      <div className="mt-4 ml-4 ">
+        <div className="flex items-center  justify-between">
+          <div className="flex items-center">
+            <div
+              className="user-avatar"
+              style={{
+                width: "25px",
+                height: "25px",
+                marginRight: "10px",
+              }}
             >
-              {comment.User.name}
-            </p>
+              {(comment.User.name[0] + comment.User.name[1]).toUpperCase()}
+            </div>
+
+            <div>
+              <p
+                style={{
+                  fontWeight: 500,
+                  marginRight: "10px",
+                  fontSize: "15px",
+                }}
+              >
+                {comment.User.name}
+              </p>
+            </div>
+            <div>
+              <p style={{ color: "gray", fontSize: "12px" }}>{commentDate}</p>
+            </div>
           </div>
-          <div>
-            <p style={{ color: "gray", fontSize: "12px" }}>{commentDate}</p>
-          </div>
+          {comment.User.id == userId ? (
+            <div
+              className="cursor-pointer"
+              onClick={() => onEditClick(comment.id)}
+            >
+              <FiEdit />
+            </div>
+          ) : null}
         </div>
         <div className="comment-text">
           <p style={{ fontSize: "15px", margin: "0px" }}>{comment.text}</p>

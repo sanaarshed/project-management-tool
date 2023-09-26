@@ -17,7 +17,7 @@ import { BiBorderNone } from "react-icons/bi";
 import { AiOutlineEllipsis } from "react-icons/ai";
 
 const TeamPage = () => {
-  const { teamId, teamName } = useParams();
+  const { teamId } = useParams();
   const [team, setTeam] = useState();
   const [teamProjects, setTeamProjects] = useState();
   const [teamUsers, setTeamUsers] = useState(null);
@@ -26,6 +26,8 @@ const TeamPage = () => {
   const [anchorMenuMain, setAnchorMenuMain] = useState(null);
   const [anchorMenu, setAnchorMenu] = useState(null);
   const [sideProjectForm, setSideProjectForm] = useState(false);
+  const [teamName, setName] = useState("");
+  const [selectedUser, setSelectedUser] = useState(null);
   const [teamState, teamdispatch] = useContext(TeamContext);
   const userId = localStorage.getItem("userId");
   let history = useHistory();
@@ -33,12 +35,22 @@ const TeamPage = () => {
   const showSideProjectForm = () => {
     setSideProjectForm(!sideProjectForm);
   };
-  // console.log("teamUsers->", teamUsers);
+  // console.log("teamState->", teamState);
+  // console.log("iddd->", teamId);
+  // console.log("nameeeeee->", teamNamee);
+
+  useEffect(() => {
+    if (teamState.teams.length > 0) {
+      const item = teamState?.teams?.find((i) => teamId == i.id);
+
+      // change name in route `/team/${team.id}/${team.name}`
+      if (item) setName(item.name);
+    }
+  }, [teamState, teamId]);
 
   const getTeam = async () => {
     try {
       const res = await apiServer.get(`/team/${teamId}`);
-      // console.log("res.data.Projects-.>", res.data.Projects);
       setTeam(res.data);
       setTeamProjects(res.data.Projects);
       setTeamUsers(res.data.Users);
@@ -70,9 +82,10 @@ const TeamPage = () => {
     await teamdispatch({ type: "get_user_teams", payload: res.data });
     history.push("/");
   };
-  const removeMember = async (user_id) => {
-    handleMenuClose();
-    await apiServer.delete(`/userteam/${teamId}/user/${user_id}`);
+  const removeMember = async () => {
+    handleRemoveMenuClose();
+    if (selectedUser)
+      await apiServer.delete(`/userteam/${teamId}/user/${selectedUser.id}`);
 
     getTeam();
   };
@@ -90,7 +103,7 @@ const TeamPage = () => {
   useEffect(() => {
     getTeam();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [teamId, teamName, setTeam, setTeamProjects, setTeamUsers]);
+  }, [teamId, setTeam, setTeamProjects, setTeamUsers]);
 
   if (loading) {
     return <Loader />;
@@ -161,19 +174,26 @@ const TeamPage = () => {
                         style={{
                           display: "flex",
                           justifyContent: "space-between",
+                          // gap: "20px",
                           alignItems: "center",
                           width: "100%",
                         }}
                       >
                         <TeamMemberIcon user={user} key={i} />
-
+                        <div style={{ width: "20px" }} />
                         <div>
                           {userId == user.id ? null : (
                             <AiOutlineEllipsis
-                              style={{ cursor: "pointer" }}
-                              onClick={handleRemoveMenuClick}
+                              style={{
+                                cursor: "pointer",
+                              }}
+                              onClick={(e) => {
+                                setSelectedUser(user);
+                                handleRemoveMenuClick(e);
+                              }}
                             />
                           )}
+
                           <Menu
                             style={{ marginTop: "40px" }}
                             anchorEl={anchorMenu}
@@ -181,7 +201,7 @@ const TeamPage = () => {
                             open={Boolean(anchorMenu)}
                             onClose={handleRemoveMenuClose}
                           >
-                            <MenuItem onClick={() => removeMember(user.id)}>
+                            <MenuItem onClick={removeMember}>
                               Remove Member
                             </MenuItem>
                           </Menu>

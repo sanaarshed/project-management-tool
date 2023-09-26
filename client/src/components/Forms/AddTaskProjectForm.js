@@ -45,10 +45,6 @@ const AddTaskProjectForm = ({
     completed,
     description,
   }) => {
-    console.log("assigneeId---->", assigneeId);
-    console.log("projectId---->", projectId);
-    console.log("due_date---->", due_date);
-    console.log("completed---->", completed);
     await apiServer.post(`/tasklist/${selectedTasklist}/task`, {
       name,
       projectId,

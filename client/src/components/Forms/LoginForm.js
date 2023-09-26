@@ -24,8 +24,6 @@ const LoginForm = () => {
     try {
       const res = await apiServer.post("/login", { email, password });
 
-      console.log("res.data.token--->", res.data.token);
-
       localStorage.setItem("email", res.data.email);
       localStorage.setItem("userId", res.data.id);
       localStorage.setItem("token", res.data.token);

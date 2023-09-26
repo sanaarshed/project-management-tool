@@ -84,12 +84,6 @@ const TaskForm = ({
     completed,
     description,
   }) => {
-    console.log("  tasklistId,--->", tasklistId);
-    console.log("projectTaskLists--->", projectTaskLists);
-    console.log("projectId--->", projectId);
-    console.log("tasklist--->", tasklistId);
-    console.log("assigneeId--->", assigneeId);
-
     if (
       projectTaskLists.length > 0 &&
       name &&
@@ -111,7 +105,6 @@ const TaskForm = ({
     // );
 
     const res = await apiServer.get(`/task/user/${userId}`);
-    console.log("res--->", res);
     await taskdispatch({ type: "get_user_tasks", payload: res.data });
 
     if (setTasklists) {

@@ -1,7 +1,8 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import AuthContext from "../../context/AuthContext";
 import "../../css/Navbar.css";
 import { GrAddCircle } from "react-icons/gr";
+
 import UserAvatar from "./UserAvatar";
 import {
   Button,
@@ -29,6 +30,7 @@ const TopNavBar = ({
   userId,
   projectId,
   getTeam,
+  cb,
   setTeamProjects,
   setTasklists,
   sidebar,
@@ -42,18 +44,28 @@ const TopNavBar = ({
   const [openTask, setOpenTask] = useState(false);
   const [editName, setEditName] = useState("");
   const [confirmDialogOpen, setConfirmDialog] = useState(false);
+  const [displayName, setDisplayName] = useState(name);
   const [userState, userdispatch] = useContext(UserContext);
   const [teamState, teamdispatch] = useContext(TeamContext);
+
+  useEffect(() => {
+    setDisplayName(name);
+  }, [name]);
 
   const [edit, setEdit] = useState(false);
   const { showSnackbar } = useSnackbar(false);
   const history = useHistory();
   const getUpdatedData = async () => {
-    const res = await apiServer.get(`/team/user/${userId}`);
-    await teamdispatch({
-      type: "update_user_teams",
-      payload: res.data,
-    });
+    if (projectId) {
+      const res = await apiServer.get(`/project/${projectId}`);
+      setDisplayName(res.data.name);
+    } else {
+      const res = await apiServer.get(`/team/user/${userId}`);
+      await teamdispatch({
+        type: "update_user_teams",
+        payload: res.data,
+      });
+    }
   };
   const clickOpenTask = () => {
     setOpenTask(true);
@@ -106,7 +118,9 @@ const TopNavBar = ({
         .put(`/project/${projectId}/name`, {
           name: editName,
         })
-        .then(() => getUpdatedData());
+        .then((res) => {
+          if (res.status === 200) getUpdatedData();
+        });
     } else
       await apiServer
         .put(`/team/${teamId}/name`, {
@@ -117,7 +131,6 @@ const TopNavBar = ({
   const handleDelete = async (event) => {
     //delete team
     handleConfirmDialogClose();
-    console.log("userId--->", userId);
 
     if (projectId) {
       await apiServer.delete(`/project/${projectId}`);
@@ -182,17 +195,15 @@ const TopNavBar = ({
       <ConfirmDialoge />
       <div className="top-nav-bar-left">
         {!edit ? (
-          <h2>{name && name}</h2>
+          <h2>{displayName}</h2>
         ) : (
           <input
             type="text"
             value={editName}
             onBlur={handleEdit}
             onKeyDown={(e) => {
-              console.log("e.key--->", e.key);
               if (e.key === "Enter") {
                 // Handle the Enter key press here
-                // For example, you can call a function or submit a form
                 handleEdit();
               }
             }}

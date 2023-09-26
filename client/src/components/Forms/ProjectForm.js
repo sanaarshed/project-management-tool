@@ -17,7 +17,7 @@ const ProjectForm = ({
   const { register, handleSubmit, errors, clearErrors } = useForm();
   const [projectName, setProjectName] = useState();
   const [teamState, teamdispatch] = useContext(TeamContext);
-  const [projectState, projectdispatch] = useContext(ProjectContext);
+  // const [projectState, projectdispatch] = useContext(ProjectContext);
 
   const userId = localStorage.getItem("userId");
 

@@ -11,7 +11,6 @@ const TeamForm = ({ handleNewClose, clickClose, open }) => {
   const userId = localStorage.getItem("userId");
 
   const onSubmit = async ({ name, description }) => {
-    console.log('onsubmit--->',)
     await apiServer.post(`/team/user/${userId}`, {
       name,
       description,

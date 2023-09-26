@@ -33,7 +33,6 @@ const ResetPasswordForm = (props) => {
         const res = await apiServer.post(`/resetPassword/${token}`, {
           newPassword: new_pass,
         });
-        console.log("res--->", res);
         if (res.status === 204 || res.status === 200) {
           setLoading(false);
           showSnackbar("Password Reset");

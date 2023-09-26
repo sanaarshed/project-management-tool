@@ -281,6 +281,7 @@ const ProjectPage = ({ sidebar }) => {
         name={project.name}
         setTasklists={setTasklists}
         sidebar={sidebar}
+        getUpdatedData={getProject}
       />
       <div className="project-page-container">
         <div className="project-page-main-content">

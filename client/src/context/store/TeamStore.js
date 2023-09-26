@@ -7,7 +7,6 @@ const initialState = {
 
 const TeamStore = ({ children }) => {
   const [teamState, teamdispatch] = useReducer(Reducer, initialState);
-  console.log("teamState--->", teamState);
   return (
     <Context.Provider value={[teamState, teamdispatch]}>
       {children}
