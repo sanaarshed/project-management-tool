@@ -35,8 +35,9 @@ const LoginForm = () => {
       // setEmail(res.data.email);
       // setUser(res.data);
     } catch (err) {
+      console.log("err--->", err);
       setLoading(false);
-      if (err.response.status === 422)
+      if (err.response?.status === 422)
         setErrorMessage(
           "User is not verified, Please check your email or sign up again to verify user."
         );

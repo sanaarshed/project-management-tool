@@ -67,7 +67,7 @@ router.post(
 
 router.get(
   "/download/:id",
-  requireAuth,
+  // requireAuth,
   asyncHandler(async (req, res, next) => {
     const file_id = req.params.id;
     const file = await File.findOne({
@@ -153,7 +153,7 @@ router.get("/:name", async (req, res) => {
   }
 });
 
-router.get("/id/:id",requireAuth, async (req, res) => {
+router.get("/id/:id", requireAuth, async (req, res) => {
   try {
     const file_id = req.params.id;
     const file = await File.findOne({
@@ -162,12 +162,16 @@ router.get("/id/:id",requireAuth, async (req, res) => {
       },
     });
     if (!file) {
-      return res.status(response.notFound.statusCode).json({ message: response.notFound.message });
+      return res
+        .status(response.notFound.statusCode)
+        .json({ message: response.notFound.message });
     }
 
     res.json({ message: response.ok.message, file });
   } catch (err) {
-    res.status(response.internalServerError.statusCode).json({ message: response.internalServerError.message });
+    res
+      .status(response.internalServerError.statusCode)
+      .json({ message: response.internalServerError.message });
   }
 });
 
