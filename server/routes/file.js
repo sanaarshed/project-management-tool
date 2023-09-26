@@ -91,12 +91,12 @@ router.get(
   })
 );
 
-router.get("/:fileName", async (req, res) => {
+router.get("/:id",requireAuth, async (req, res) => {
   try {
-    const file_id = req.params.fileName;
+    const file_id = req.params.id;
     const file = await File.findOne({
       where: {
-        name: file_id,
+        id: file_id,
       },
     });
     if (!file) {
