@@ -163,8 +163,9 @@ router.post(
       where: {
         team_id: team_id,
         user_id: user_id,
-      },
+      }
     });
+    
     if (userteam) {
       res
         .status(response.userAlreadyExists.statusCode)
@@ -172,7 +173,32 @@ router.post(
     } else if (!userteam) {
       const newUserTeam = await UserTeam.create({
         team_id: team_id,
-        user_id: user_id,
+        user_id: user_id
+      });
+      await newUserTeam.reload({
+        include: [
+          {
+            model: Team,
+          },
+          {
+            model: User,
+          },
+        ],
+      });
+      if(!newUserTeam){
+        res
+        .status(response.noTeamExists.statusCode)
+        .send({ error: response.noTeamExists.message });
+      }
+      const data = newUserTeam.toJSON()
+      sendEmail({
+        to: data.User.email,
+        subject: "Workspace Join Notification",
+        templateName: "addMemberTeam", // Name of the EJS template file without the ".ejs" extension
+        templateData: {
+          workplaceName: data.Team.name,
+          Name: data.User.name,
+        },
       });
       res.json(newUserTeam).status(201);
     }
