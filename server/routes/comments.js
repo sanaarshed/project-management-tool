@@ -1,25 +1,23 @@
 const express = require("express");
-const { asyncHandler } = require("./utilities/utils");
-const { requireAuth } = require("./utilities/auth");
+const { asyncHandler } = require("../utilities/utils");
+const { requireAuth } = require("../utilities/auth");
 const { check, validationResult } = require("express-validator");
 const { Comment } = require("../db/models");
-const response = require("./utilities/response");
+const response = require("../utilities/response");
 
 const router = express.Router();
 
 //Authenticates user before being able to use API
 // router.use(requireAuth);
 
-//get all comments
-router.get(
-  "/",
-  requireAuth,
-  asyncHandler(async (req, res, next) => {
-    const comments = await Comment.findAll({});
 
-    res.json(comments);
-  })
-);
+router.get("/", requireAuth, async (req, res, next) => {
+  try {
+    res.json(await Comment.findAll({}));
+  } catch (error) {
+    next(error);
+  }
+});
 
 
 //updates comment
