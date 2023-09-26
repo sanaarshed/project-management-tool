@@ -77,25 +77,29 @@ const PopOutTaskDetails = ({
 
   const downloadFile = async (id) => {
     console.log("downlaod File------->");
-    const fileUrl = await apiServer.get(`/file/${id}`);
-    // const fileUrl = `${process.env.REACT_APP_BASE_URL}/file/download/${id}`;
-    console.log("fileUrl.path--->", fileUrl);
-    console.log("fileUrl.path--->", fileUrl.path);
-    // Create a hidden anchor element
-    const anchor = document.createElement("a");
-    o;
-    anchor.style.display = "none";
-    anchor.href = fileUrl.path;
-    // anchor.download = "your-file-name.ext"; // You can specify the desired file name here
+    try {
+      const fileUrl = await apiServer.get(`/file/id/${id}`);
+      // const fileUrl = `${process.env.REACT_APP_BASE_URL}/file/download/${id}`;
+      console.log("fileUrl.path--->", fileUrl);
+      console.log("fileUrl.path--->", fileUrl.path);
+      // Create a hidden anchor element
+      const anchor = document.createElement("a");
+      o;
+      anchor.style.display = "none";
+      anchor.href = fileUrl.path;
+      // anchor.download = "your-file-name.ext"; // You can specify the desired file name here
 
-    // Add the anchor element to the DOM
-    document.body.appendChild(anchor);
+      // Add the anchor element to the DOM
+      document.body.appendChild(anchor);
 
-    // Simulate a click event to trigger the download
-    anchor.click();
+      // Simulate a click event to trigger the download
+      anchor.click();
 
-    // Clean up by removing the anchor element
-    document.body.removeChild(anchor);
+      // Clean up by removing the anchor element
+      document.body.removeChild(anchor);
+    } catch (e) {
+      console.log("e--->", e);
+    }
   };
 
   const handleFileUpload = async () => {
