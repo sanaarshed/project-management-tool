@@ -6,7 +6,6 @@ const { User, Team, UserTeam, Invitations } = require("../db/models");
 const { getUserToken, requireAuth, tokenVerify } = require("../utilities/auth");
 const { sendEmail } = require("../utilities/email");
 const responses = require("../utilities/response");
-const { response } = require("../app");
 
 const router = express.Router();
 
@@ -144,7 +143,6 @@ router.post(
       createdAt: new Date(),
       updatedAt: new Date(),
     });
-
     const token = getUserToken(user);
 
     const existingInvitationUser = await Invitations.findOne({
@@ -165,45 +163,49 @@ router.post(
           },
           {
             where: {
-              id: existingInvitationUser.id,
+              id: user.id,
             },
           }
         );
-      }
-    }
-
-    if (user) {
-      if (token) {
         await User.update(
           {
-            token: token,
+            is_verify: true,
           },
           {
             where: {
-              email: user.email,
+              id: user.id,
             },
           }
         );
-
-        await sendEmail({
-          to: user.email,
-          subject: "User Verification",
-          templateName: "userVerify", // Name of the EJS template file without the ".ejs" extension
-          templateData: {
-            token: token,
-          },
-        });
       }
-    }
+    }else{
+      if (user) {
+        if (token) {
+          await User.update(
+            {
+              token: token,
+            },
+            {
+              where: {
+                email: user.email,
+              },
+            }
+          );
+        }}
+      await sendEmail({
+        to: user.email,
+        subject: "User Verification",
+        templateName: "userVerify", // Name of the EJS template file without the ".ejs" extension
+        templateData: {
+          token: token,
+        },
+      });
+    } 
 
     res.status(responses.ok.statusCode).json({
       id: user.id,
-      token,
       email: user.email,
     });
-    // } catch (err) {
-    //   res.status(422).send({ error: err.errors[0].message });
-    // }
   })
 );
 

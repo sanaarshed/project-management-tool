@@ -15,7 +15,6 @@ router.get(
   requireAuth,
   asyncHandler(async (req, res, next) => {
     const tasklists = await TaskList.findAll({});
-
     res.json(tasklists);
   })
 );
@@ -28,8 +27,8 @@ router.get(
     const tasklist_id = req.params.id;
     const tasks = await Task.findAll({
       where: {
-        tasklist_id: tasklist_id,
-      },
+        tasklist_id: tasklist_id
+      }
     });
     res.json(tasks);
   })
@@ -47,7 +46,7 @@ router.post(
       assigneeId,
       due_date,
       completed,
-      description,
+      description
     } = req.body;
     const task = await Task.create({
       name: name,
@@ -56,7 +55,7 @@ router.post(
       due_date: due_date,
       completed: completed,
       description: description,
-      tasklist_id: tasklist_id,
+      tasklist_id: tasklist_id
     });
     if (!task) {
       res.status(response.notFound.statusCode);
@@ -74,7 +73,7 @@ router.delete(
     const tasklist_id = req.params.id;
 
     const tasklist = await TaskList.destroy({
-      where: { id: tasklist_id },
+      where: { id: tasklist_id }
     });
     res.json(response.ok.statusCode);
   })
@@ -92,17 +91,19 @@ router.put(
     try {
       const updateIndex = await TaskList.update(
         {
-          column_index: newIndex,
+          column_index: newIndex
         },
         {
           where: {
-            id: tasklist_id,
-          },
+            id: tasklist_id
+          }
         }
       );
       res.json(updateIndex);
     } catch (err) {
-      res.status(response.internalServerError.statusCode).send({ error: response.internalServerError.message });
+      res
+        .status(response.internalServerError.statusCode)
+        .send({ error: response.internalServerError.message });
     }
   })
 );

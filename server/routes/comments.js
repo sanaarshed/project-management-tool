@@ -14,7 +14,7 @@ const router = express.Router();
 router.get("/", requireAuth, async (req, res, next) => {
   try {
     res.json(await Comment.findAll({}));
-  } catch (error) {
+  }catch (error) {
     next(error);
   }
 });

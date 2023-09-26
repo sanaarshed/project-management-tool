@@ -2,8 +2,9 @@ const express = require("express");
 const { asyncHandler } = require("../utilities/utils");
 const { requireAuth } = require("../utilities/auth");
 const { check, validationResult } = require("express-validator");
-const { UserTeam, Team, User } = require("../db/models");
+const { UserTeam, Team, User, Project, UserProject } = require("../db/models");
 const responses = require("../utilities/response");
+
 
 
 const router = express.Router();
@@ -16,6 +17,13 @@ router.delete(
   asyncHandler(async (req, res, next) => {
     const team_id = req.params.teamId;
     const user_id = req.params.userId;
+    const findProject = await Project.findOne({where:{
+      team_id: team_id,
+    }})
+    const projectJSON = findProject.get({ plain: true });
+    if(projectJSON){
+    await UserProject.destroy({ where: { project_id: projectJSON.id,user_id: user_id } });
+    }
     const userteam = await UserTeam.destroy({
       where: {
         user_id: user_id,
