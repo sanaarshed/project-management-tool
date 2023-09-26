@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
 
       Project.hasMany(models.Task, {
         foreignKey: "project_id",
+        onDelete: "CASCADE"
       });
 
       Project.belongsTo(models.Team, {
