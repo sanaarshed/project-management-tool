@@ -5,7 +5,7 @@ import "../../css/Project.css";
 import { AiOutlineProject } from "react-icons/ai";
 import Loader from "../Loader";
 
-const ProjectTile = ({ project, teamId, id }) => {
+const ProjectTile = ({ index, project, teamId }) => {
   const [loading, setLoading] = useState(true);
   const [team, setTeam] = useState();
   const getTeam = async () => {
@@ -13,7 +13,6 @@ const ProjectTile = ({ project, teamId, id }) => {
     setTeam(res.data);
     setLoading(false);
   };
-
   useEffect(() => {
     (async () => {
       const res = await apiServer.get(`/project/${project.id}/team`);
@@ -34,10 +33,11 @@ const ProjectTile = ({ project, teamId, id }) => {
     >
       <div className={`project-tile-container`}>
         <div className="project-tile-box">
-          <div className={`project-tile-icon project-tile-icon-${id}`}>
+          <div className={`project-tile-icon project-tile-icon-${index}`}>
             <AiOutlineProject style={{ fontSize: "30px", color: "white" }} />
           </div>
         </div>
+
         <div className="project-tile-name">{project.name}</div>
       </div>
     </Link>

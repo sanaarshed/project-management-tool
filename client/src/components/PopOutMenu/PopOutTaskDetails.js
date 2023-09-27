@@ -34,6 +34,8 @@ const PopOutTaskDetails = ({
   const [dueDate, setDueDate] = useState(new Date(task.due_date));
   const [selectedFile, setSelectedFile] = useState(null);
   const [commentEdit, setCommentEdit] = useState(false);
+  const [commentId, setCommentId] = useState(null);
+  const [commentText, setCommentText] = useState("");
   const [uploading, setUploading] = useState(false);
   // const [completed, setCompleted] = useState(task.completed);
   const [commentBox, setCommentBox] = useState(false);
@@ -51,7 +53,7 @@ const PopOutTaskDetails = ({
   // console.log(date, "moment date convert from db");
   // console.log(dueDate, "dueDate state new Date convert ");
 
-  const { register, handleSubmit, clearErrors } = useForm();
+  const { register, handleSubmit, clearErrors, reset } = useForm();
 
   //This doesn't do anything for initial
   const getProjectUsers = async (event) => {
@@ -103,19 +105,22 @@ const PopOutTaskDetails = ({
     }
   };
 
-  const onCommentEdit = async (commentId) => {
+  const onCommentEditSubmit = async (text, id) => {
+    setCommentEdit(false);
+    setCommentId(null);
+    setCommentText("");
     try {
-      await apiServer.post(`/comment/${commentId}`);
+      await apiServer
+        .put(`/comment/${id}`, { text })
+        .then((res) => getUpdatedData());
     } catch (error) {
       console.log("error--->", error);
     }
   };
-  const onEditClick = async (commentId) => {
-    try {
-      await apiServer.post(`/comment/${commentId}`);
-    } catch (error) {
-      console.log("error--->", error);
-    }
+  const onEditClick = (id, text) => {
+    setCommentEdit(true);
+    setCommentId(id);
+    setCommentText(text);
   };
   const handleFileUpload = async () => {
     console.log("handleFileUpload--->");
@@ -188,10 +193,13 @@ const PopOutTaskDetails = ({
       text,
       user_id,
     });
-
+    getUpdatedData();
+    updateScroll();
+    reset({ text: "" });
+  };
+  const getUpdatedData = async () => {
     const comments = await apiServer.get(`/task/${task.id}/comment`);
     setTaskComments(comments.data);
-    updateScroll();
   };
 
   const handleMarkComplete = async () => {
@@ -260,7 +268,7 @@ const PopOutTaskDetails = ({
     ).format("MMM D");
 
     return (
-      <div className="mt-4 ml-4 ">
+      <div className="m-4 ">
         <div className="flex items-center  justify-between">
           <div className="flex items-center">
             <div
@@ -289,17 +297,39 @@ const PopOutTaskDetails = ({
               <p style={{ color: "gray", fontSize: "12px" }}>{commentDate}</p>
             </div>
           </div>
-          {comment.User.id == userId ? (
+          {comment.User.id == userId && !commentEdit ? (
             <div
               className="cursor-pointer"
-              onClick={() => onEditClick(comment.id)}
+              onClick={() => onEditClick(comment.id, comment.text)}
             >
               <FiEdit />
             </div>
           ) : null}
         </div>
         <div className="comment-text">
-          <p style={{ fontSize: "15px", margin: "0px" }}>{comment.text}</p>
+          {commentEdit && comment.id == commentId ? (
+            <form onSubmit={() => onCommentEditSubmit(commentText, comment.id)}>
+              <textarea
+                className="  border-1 border-solid p-1"
+                // type="text"
+                value={commentText}
+                style={{ borderWidth: "1px" }}
+                onChange={(e) => setCommentText(e.target.value)}
+                rows="3"
+                cols="35"
+                name="textarea"
+              />
+              <button
+                className="comment-button"
+                // style={{ height: "20px", width: "60px" }}
+                type="submit"
+              >
+                Save
+              </button>
+            </form>
+          ) : (
+            <p style={{ fontSize: "15px", margin: "0px" }}>{comment.text}</p>
+          )}
         </div>
       </div>
     );
@@ -404,6 +434,7 @@ const PopOutTaskDetails = ({
                 overflowY: "auto",
                 borderBottom: "1px solid lightgrey",
                 marginBottom: "5px",
+                paddingBottom: "60px",
               }}
             >
               <div>
@@ -470,12 +501,12 @@ const PopOutTaskDetails = ({
                       <div
                         className="project-select-container"
                         style={{
-                          height: "25px",
-                          borderRadius: "20px",
+                          // height: "25px",
+                          borderRadius: "10px",
 
                           alignItems: "center",
                           justifyContent: "center",
-                          marginTop: "15px",
+                          // marginTop: "15px",
                         }}
                       >
                         <select
@@ -487,7 +518,7 @@ const PopOutTaskDetails = ({
                           ref={register({ required: true })}
                           onBlur={updateProject}
                           style={{
-                            height: "25px",
+                            // height: "25px",
                             borderRadius: "20px",
                             display: "flex",
                             alignItems: "center",
@@ -518,7 +549,7 @@ const PopOutTaskDetails = ({
                       </div>
 
                       <div className="file-upload-container">
-                        <div>
+                        <div className="flex">
                           <input
                             type="file"
                             id="file-input"
@@ -535,7 +566,8 @@ const PopOutTaskDetails = ({
                           {selectedFile && (
                             <div>
                               <button
-                                className="file-upload-button"
+                                className="comment-button"
+                                // className="file-upload-button"
                                 onClick={handleFileUpload}
                                 disabled={uploading}
                               >

@@ -231,7 +231,7 @@ const TeamPage = () => {
                     <ProjectTile
                       teamId={teamId}
                       project={project}
-                      key={i}
+                      index={i}
                       id={project.id}
                     />
                   );
