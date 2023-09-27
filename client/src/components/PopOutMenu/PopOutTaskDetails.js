@@ -430,11 +430,10 @@ const PopOutTaskDetails = ({
                 flexDirection: "column",
                 minHeight: "1px",
                 zIndex: "100",
-                padding: "0 24px",
+                padding: "10px 24px 150px 24px",
                 overflowY: "auto",
                 borderBottom: "1px solid lightgrey",
                 marginBottom: "5px",
-                paddingBottom: "60px",
               }}
             >
               <div>
