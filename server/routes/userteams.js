@@ -20,10 +20,14 @@ router.delete(
     const findProject = await Project.findOne({where:{
       team_id: team_id,
     }})
+    if(findProject){
     const projectJSON = findProject.get({ plain: true });
+
     if(projectJSON){
     await UserProject.destroy({ where: { project_id: projectJSON.id,user_id: user_id } });
     }
+  }
+
     const userteam = await UserTeam.destroy({
       where: {
         user_id: user_id,
