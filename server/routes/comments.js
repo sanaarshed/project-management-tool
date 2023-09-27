@@ -10,15 +10,13 @@ const router = express.Router();
 //Authenticates user before being able to use API
 // router.use(requireAuth);
 
-
 router.get("/", requireAuth, async (req, res, next) => {
   try {
     res.json(await Comment.findAll({}));
-  }catch (error) {
+  } catch (error) {
     next(error);
   }
 });
-
 
 //updates comment
 router.put(
@@ -30,7 +28,8 @@ router.put(
     try {
       await Comment.update(
         {
-          ...data,updatedAt: new Date()
+          ...data,
+          updatedAt: new Date(),
         },
         {
           where: {
@@ -41,7 +40,9 @@ router.put(
       const comment = await Comment.findOne({ where: { id: comment_id } });
       res.json(comment);
     } catch (err) {
-      res.status(response.internalServerError.statusCode).send({ error: response.internalServerError.message });
+      res
+        .status(response.internalServerError.statusCode)
+        .send({ error: response.internalServerError.message });
     }
   })
 );

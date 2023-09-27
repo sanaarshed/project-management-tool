@@ -13,7 +13,11 @@ const AddProjectPopOut = ({
     <>
       <div
         className={"popout-form"}
-        style={{ width: "30%", height: "96%", margin: "10px 10px 10px 10px" }}
+        style={{
+          width: "30%",
+          height: "96%",
+          //  margin: "10px 10px 10px 10px"
+        }}
       >
         <div
           style={{
