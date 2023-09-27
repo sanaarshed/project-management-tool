@@ -77,8 +77,7 @@ const HomePage = () => {
   const projectLists = projectState.projects.slice(0, 5);
 
   const projectTiles = projectLists.map((project, i) => {
-    // return <ProjectItemHome project={project} key={i} id={project.id} />;
-    return <ProjectTile project={project} key={i} id={project.id} />;
+    return <ProjectTile project={project} index={i} id={project.id} />;
   });
 
   return (

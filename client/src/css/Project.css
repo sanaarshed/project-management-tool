@@ -13,6 +13,9 @@
   transition-duration: 0.4s;
   cursor: pointer;
 }
+.project-tile-icon-0 {
+  background: slateblue;
+}
 .project-tile-icon-1 {
   background: lightblue;
 }
@@ -38,7 +41,7 @@
   background: skyblue;
 }
 .project-tile-icon-9 {
-  background: lightgoldenrodyellow;
+  background: lightcoral;
 }
 .project-tile-icon-10 {
   background: lawngreen;
