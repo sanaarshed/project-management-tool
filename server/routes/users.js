@@ -177,6 +177,12 @@ router.post(
             },
           }
         );
+        sendEmail({
+          to: user.email,
+          subject: "Registration Successfully",
+          templateName: "register", // Name of the EJS template file without the ".ejs" extension
+          templateData: null,
+        });
       }
     }else{
       if (user) {
